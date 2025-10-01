@@ -21,7 +21,7 @@ export default function HomePage() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-background">
+    <main className="min-h-screen bg-background overflow-hidden">
       <div className="fixed top-0 left-0 w-full z-50 bg-background backdrop-blur-md border-b">
         <Navbar />
       </div>

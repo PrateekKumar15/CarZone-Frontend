@@ -1,70 +1,24 @@
-// import React from 'react'
+"use client";
+
 import { useState, useRef, useEffect } from "react"
-import Button from "@/components/ui/PrimaryButton"
+import { Button } from "@/components/ui/button"
 import { TiLocationArrow } from "react-icons/ti"
+import { ArrowRight, Car } from "lucide-react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
+import { useRouter } from "next/navigation"
+
 gsap.registerPlugin(ScrollTrigger)
+
 const Hero = () => {
-    // const [currentIndex, setCurrentIndex] = useState(1)
-    // const [hasClicked, setHasClicked] = useState(false)
+    const router = useRouter()
     const [isloading, setIsLoading] = useState(true);
-    const [loadedVideos, setLoadedVideos] = useState(0);
-    const totalVideos = 4;
-    const nextVideoRef = useRef(null);
-    // const upcomingVideoIndex = ((currentIndex % totalVideos + 1));
-    // const getVideoSrc = (index) => {
-    //     return `./videos/hero-${index}.mp4`
-    // }
+
 
     const handleVideoLoaded = () => {
-        setLoadedVideos((prev) => (prev + 1));
-    }
-
-
-
-    // const handleMiniVdClick = () => {
-    //     setHasClicked(true);
-    //     setCurrentIndex(upcomingVideoIndex);
-
-    // }
-
-    useEffect(() => {
-        loadedVideos == totalVideos - 1;
         setIsLoading(false);
-    }, [loadedVideos]);
-
-
-    // useGSAP(() => {
-    //     if (hasClicked) {
-    //         gsap.set('#next-video', {
-    //             visibility: 'visible'
-    //         })
-
-    //         gsap.to('#next-video', {
-    //             transformOrigin: 'center center',
-    //             scale: 1,
-    //             width: '100%',
-    //             height: '100%',
-    //             duration: 1,
-    //             ease: 'power1.inOut',
-    //             onStart: () => {
-    //                 nextVideoRef.current.play();
-    //             }
-    //         })
-
-    //         gsap.from('#current-video', {
-    //             transformOrigin: 'center center',
-    //             scale: 0,
-    //             duration: 1.5,
-    //             ease: 'power1.inOut',
-    //         })
-
-    //     }
-
-    // }
-    //     , { dependencies: [currentIndex], revertOnUpdate: true })
+    }
 
 
     useGSAP(() => {
@@ -86,11 +40,35 @@ const Hero = () => {
         });
     })
 
+    // Animate hero text
+    useGSAP(() => {
+        const tl = gsap.timeline()
+
+        tl.from(".hero-title", {
+            y: 100,
+            opacity: 0,
+            duration: 1,
+            ease: "power3.out",
+            delay: 0.5
+        })
+            .from(".hero-subtitle", {
+                y: 50,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=0.5")
+            .from(".hero-cta", {
+                y: 30,
+                opacity: 0,
+                duration: 0.8,
+                ease: "power3.out"
+            }, "-=0.5")
+    })
 
     return (
-        <div className="relative h-dvh w-screen overflow-x-hidden">
+        <div className="relative h-dvh w-screen overflow-hidden">
             {isloading && (
-                <div className="flex-center absolute h-dvh w-screen z-[100]  overflow-hidden bg-violet-50">
+                <div className="flex items-center justify-center absolute h-dvh w-screen z-[100] overflow-hidden bg-background">
                     <div className="three-body">
                         <div className="three-body__dot"></div>
                         <div className="three-body__dot"></div>
@@ -98,41 +76,67 @@ const Hero = () => {
                     </div>
                 </div>
             )}
-            <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg" >
+
+            <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg">
                 <div>
-                    {/* <div className="mask-clip-path absolute-center z-50 size-64 cursor-pointer overflow-hidden rounded-lg">
-                        <div onClick={handleMiniVdClick} className="origin-center scale-50 opacity-0 transition-all duration-500 hover:scale-100 hover:opacity-100" >
-                            <video ref={nextVideoRef} src={getVideoSrc(upcomingVideoIndex)} loop muted id="current-video" className="size-64 origin-center scale-150 object-cover object-center" onLoadedData={handleVideoLoaded}></video>
-                        </div>
-
-                    </div> */}
-
-                    {/* <video ref={nextVideoRef} src="./videos/hero-4.mp4" loop muted id="next-video" className="absolute-center invisible z-20 size-64 object-cover object-center"
+                    <video
+                        src="./videos/hero-4.mp4"
+                        autoPlay
+                        loop
+                        muted
+                        className="absolute left-0 top-0 size-full object-cover object-center brightness-75"
                         onLoadedData={handleVideoLoaded}
-                    ></video> */}
-                    <video src="./videos/hero-4.mp4"
-                        autoPlay loop muted className="absolute left-0 top-0 size-full object-cover object-center" onLoadedData={handleVideoLoaded}
-                    ></video>
-
+                    />
                 </div>
-                <h1 className="special-font hero-heading absolute bottom-5 right-5 z-40 text-primary">
-                    R<b>e</b>nt or B<b>u</b>y
-                </h1>
-                <div className="absolute left-0 top-auto z-40 size-full">
-                    <div className="mt-24 px-5 sm:px-10">
-                        <h1 className="special-font hero-heading block text-accent-foreground ">c<b>a</b>rzo<b>n</b>e</h1>
-                        <p className="mb-5 max-w-64 font-robert-regular text-accent-foreground ">Enter the MetaGame Layer<br /> Unleash Economy</p>
-                        <Button id='watch-trailer' title='View All Vehicles' onClick={()=>{
-                            window.location.href = '/cars';
-                        }} leftIcon={<TiLocationArrow />} containerClass="bg-primary text-primary-foreground flex-center gap-1 " />
 
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-b from-background/20 via-transparent to-background/10 z-20" />
+
+                {/* Hero Content */}
+                <div className="absolute left-0 top-0 z-40 size-full flex items-center">
+                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 mt-20">
+                        <div className="max-w-4xl">
+                            <h1 className="hero-title text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-foreground mb-6">
+                                Find Your Perfect
+                                <span className="block text-primary mt-2">Dream Car</span>
+                            </h1>
+
+                            <p className="hero-subtitle text-lg sm:text-xl md:text-2xl text-muted-foreground max-w-2xl mb-8">
+                                Discover premium vehicles for rent or purchase. Experience luxury, performance, and style in every journey.
+                            </p>
+
+                            <div className="hero-cta flex flex-wrap gap-4">
+                                <Button
+                                    size="lg"
+                                    className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 text-base sm:text-lg px-8 py-6"
+                                    onClick={() => router.push('/cars')}
+                                >
+                                    <Car className="h-5 w-5" />
+                                    Browse All Cars
+                                    <ArrowRight className="h-5 w-5" />
+                                </Button>
+
+                                <Button
+                                    size="lg"
+                                    variant="outline"
+                                    className="border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground text-base sm:text-lg px-8 py-6"
+                                    onClick={() => {
+                                        const element = document.getElementById('featured-cars');
+                                        element?.scrollIntoView({ behavior: 'smooth' });
+                                    }}
+                                >
+                                    View Featured
+                                </Button>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <h1 className="special-font hero-heading absolute bottom-5 right-5  text-foreground">
-                R<b>e</b>nt or B<b>u</b>y
-            </h1>
+            {/* Bottom decorative text */}
+            <div className="special-font hero-heading z-10 absolute bottom-5 right-5 text-primary/90 text-2xl sm:text-4xl md:text-7xl pointer-events-none">
+                C<b>a</b><b>r</b>Zone
+            </div>
         </div>
     )
 }

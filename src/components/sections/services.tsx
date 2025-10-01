@@ -94,7 +94,7 @@ const Services = () => {
     <section
       ref={sectionRef}
       id="services"
-      className="py-20 bg-gradient-to-br from-gray-50 to-blue-50 relative overflow-hidden"
+      className="py-20 bg-background relative overflow-hidden"
     >
       {/* Background Elements */}
       <div className="absolute inset-0">
@@ -108,7 +108,7 @@ const Services = () => {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute top-20 right-20 w-32 h-32 bg-blue-200/20 rounded-full blur-xl"
+          className="absolute top-20 right-20 w-32 h-32 bg-primary/10 rounded-full blur-xl"
         />
         <motion.div
           animate={{
@@ -120,7 +120,7 @@ const Services = () => {
             repeat: Infinity,
             ease: "linear",
           }}
-          className="absolute bottom-20 left-20 w-48 h-48 bg-indigo-200/20 rounded-full blur-xl"
+          className="absolute bottom-20 left-20 w-48 h-48 bg-accent/10 rounded-full blur-xl"
         />
       </div>
 
@@ -132,15 +132,13 @@ const Services = () => {
           transition={{ duration: 0.8 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-            Our{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-              Services
-            </span>
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
+            Our <span className="text-primary">Services</span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Experience exceptional service with every rental. We&apos;re committed to
-            providing you with the best car rental experience possible.
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            Experience exceptional service with every rental. We&apos;re
+            committed to providing you with the best car rental experience
+            possible.
           </p>
         </motion.div>
 
@@ -153,25 +151,25 @@ const Services = () => {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6, delay: index * 0.1 }}
               whileHover={{ y: -10 }}
-              className="service-card group bg-white rounded-2xl p-8 shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden"
+              className="service-card group bg-card rounded-2xl p-8 shadow-md hover:shadow-xl transition-all duration-300 border border-border relative overflow-hidden"
             >
               {/* Background Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-br from-blue-50/50 to-indigo-50/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
               <div className="relative z-10">
                 {/* Icon */}
                 <motion.div
                   whileHover={{ scale: 1.1, rotate: 5 }}
-                  className="w-16 h-16 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center mb-6 shadow-lg"
+                  className="w-16 h-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-md"
                 >
-                  <service.icon className="h-8 w-8 text-white" />
+                  <service.icon className="h-8 w-8 text-primary-foreground" />
                 </motion.div>
 
                 {/* Content */}
-                <h3 className="text-2xl font-bold text-gray-900 mb-4 group-hover:text-blue-600 transition-colors">
+                <h3 className="text-2xl font-bold text-foreground mb-4 group-hover:text-primary transition-colors">
                   {service.title}
                 </h3>
-                <p className="text-gray-600 mb-6 leading-relaxed">
+                <p className="text-muted-foreground mb-6 leading-relaxed">
                   {service.description}
                 </p>
 
@@ -182,8 +180,8 @@ const Services = () => {
                       key={featureIndex}
                       className="flex items-center space-x-3"
                     >
-                      <CheckCircle className="h-5 w-5 text-green-500 flex-shrink-0" />
-                      <span className="text-gray-700">{feature}</span>
+                      <CheckCircle className="h-5 w-5 text-accent flex-shrink-0" />
+                      <span className="text-muted-foreground">{feature}</span>
                     </li>
                   ))}
                 </ul>
@@ -192,7 +190,7 @@ const Services = () => {
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="group/btn w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
+                  className="group/btn w-full bg-primary hover:bg-primary/90 text-primary-foreground py-3 rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 flex items-center justify-center space-x-2"
                 >
                   <span>Learn More</span>
                   <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -209,11 +207,11 @@ const Services = () => {
           transition={{ duration: 0.8, delay: 0.3 }}
           className="text-center mt-16"
         >
-          <div className="bg-white rounded-2xl p-8 shadow-lg border border-gray-100 max-w-4xl mx-auto">
-            <h3 className="text-3xl font-bold text-gray-900 mb-4">
+          <div className="bg-card rounded-2xl p-8 shadow-md border border-border max-w-4xl mx-auto">
+            <h3 className="text-3xl font-bold text-foreground mb-4">
               Ready to Experience Premium Car Rental?
             </h3>
-            <p className="text-xl text-gray-600 mb-8">
+            <p className="text-xl text-muted-foreground mb-8">
               Join thousands of satisfied customers who trust CarZone for their
               transportation needs.
             </p>
@@ -221,14 +219,14 @@ const Services = () => {
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full font-semibold text-lg shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-full font-semibold text-lg shadow-md hover:shadow-xl transition-all duration-300"
               >
                 Book Your Car Now
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05, y: -2 }}
                 whileTap={{ scale: 0.95 }}
-                className="bg-white border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-blue-600 hover:text-white transition-all duration-300"
+                className="bg-card border-2 border-primary text-primary px-8 py-4 rounded-full font-semibold text-lg hover:bg-primary hover:text-primary-foreground transition-all duration-300"
               >
                 Contact Us
               </motion.button>
