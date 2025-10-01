@@ -15,11 +15,40 @@ export interface AuthState {
   isAuthenticated: boolean;
 }
 
-const initialState: AuthState = {
-  user: null,
-  token: null,
-  isAuthenticated: false,
+// Load initial state from localStorage if available
+const loadInitialState = (): AuthState => {
+  if (typeof window === "undefined") {
+    return {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+    };
+  }
+
+  try {
+    const token = localStorage.getItem("auth_token");
+    const userStr = localStorage.getItem("user");
+
+    if (token && userStr) {
+      const user = JSON.parse(userStr);
+      return {
+        user,
+        token,
+        isAuthenticated: true,
+      };
+    }
+  } catch (error) {
+    console.error("Error loading auth state:", error);
+  }
+
+  return {
+    user: null,
+    token: null,
+    isAuthenticated: false,
+  };
 };
+
+const initialState: AuthState = loadInitialState();
 
 // Async thunks for API calls
 export const loginUser = createAsyncThunk(
@@ -84,6 +113,11 @@ const authSlice = createSlice({
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
+      // Clear localStorage
+      if (typeof window !== "undefined") {
+        localStorage.removeItem("user");
+        localStorage.removeItem("auth_token");
+      }
     },
     setCredentials: (
       state,
@@ -92,6 +126,11 @@ const authSlice = createSlice({
       state.user = action.payload.user;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      // Store in localStorage
+      if (typeof window !== "undefined") {
+        localStorage.setItem("user", JSON.stringify(action.payload.user));
+        localStorage.setItem("auth_token", action.payload.token);
+      }
     },
   },
   extraReducers: (builder) => {
@@ -101,28 +140,51 @@ const authSlice = createSlice({
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
+        // Store user in localStorage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(action.payload.user));
+        }
       })
       .addCase(loginUser.rejected, (state) => {
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        // Clear localStorage on login failure
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("user");
+          localStorage.removeItem("auth_token");
+        }
       })
       // Register cases
       .addCase(registerUser.fulfilled, (state, action) => {
         state.user = action.payload.user;
         state.token = action.payload.token;
         state.isAuthenticated = true;
+        // Store user in localStorage
+        if (typeof window !== "undefined") {
+          localStorage.setItem("user", JSON.stringify(action.payload.user));
+        }
       })
       .addCase(registerUser.rejected, (state) => {
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        // Clear localStorage on registration failure
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("user");
+          localStorage.removeItem("auth_token");
+        }
       })
       // Logout cases
       .addCase(logoutUser.fulfilled, (state) => {
         state.user = null;
         state.token = null;
         state.isAuthenticated = false;
+        // Clear localStorage on logout
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("user");
+          localStorage.removeItem("auth_token");
+        }
       });
   },
 });

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import {
-  Car,
   Mail,
   Phone,
   MapPin,
@@ -15,6 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 const Footer = () => {
   const socialLinks = [
@@ -57,7 +57,13 @@ const Footer = () => {
           >
             <div className="flex items-center space-x-2 mb-4">
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
-                <Car className="h-6 w-6 text-primary-foreground" />
+                <Image
+                                                          src="/logocar.png"
+                                                          alt="CarZone Logo"
+                                                          width={75}
+                                                          height={40}
+                                                          className="object-contain"
+                                                        />
               </div>
               <span className="text-2xl font-bold text-foreground">
                 CarZone

@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useRef, useEffect } from "react"
+import { useState} from "react"
 import { Button } from "@/components/ui/button"
-import { TiLocationArrow } from "react-icons/ti"
-import { ArrowRight, Car } from "lucide-react"
+import { ArrowRight} from "lucide-react"
 import { useGSAP } from "@gsap/react"
 import gsap from "gsap"
 import ScrollTrigger from "gsap/ScrollTrigger"
 import { useRouter } from "next/navigation"
+import Image from "next/image"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -111,7 +111,13 @@ const Hero = () => {
                                     className="bg-primary hover:bg-primary/90 text-primary-foreground gap-2 text-base sm:text-lg px-8 py-6"
                                     onClick={() => router.push('/cars')}
                                 >
-                                    <Car className="h-5 w-5" />
+                                    <Image
+                                          src="/logocar.png"
+                                          alt="CarZone Logo"
+                                          width={75}
+                                          height={40}
+                                          className="object-contain"
+                                        />
                                     Browse All Cars
                                     <ArrowRight className="h-5 w-5" />
                                 </Button>
@@ -135,7 +141,7 @@ const Hero = () => {
 
             {/* Bottom decorative text */}
             <div className="special-font hero-heading z-10 absolute bottom-5 right-5 text-primary/90 text-2xl sm:text-4xl md:text-7xl pointer-events-none">
-                C<b>a</b><b>r</b>Zone
+                C<b>a</b>rZ<b>o</b>ne
             </div>
         </div>
     )
