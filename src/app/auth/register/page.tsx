@@ -7,6 +7,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -20,6 +21,16 @@ import {
 import { useAppDispatch } from "@/hooks/redux";
 import { registerUser } from "@/store/slices/authSlice";
 import ProtectedRoute from "@/components/auth/protected-route";
+import {
+  Mail,
+  Lock,
+  User,
+  Phone,
+  ArrowRight,
+  Loader2,
+  CheckCircle2,
+} from "lucide-react";
+import Image from "next/image";
 
 const registerSchema = z
   .object({
@@ -45,9 +56,13 @@ export default function RegisterPage() {
     register,
     handleSubmit,
     formState: { errors },
+    watch,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
   });
+
+  const password = watch("password");
+  const confirmPassword = watch("confirmPassword");
 
   const onSubmit = async (data: RegisterForm) => {
     setIsLoading(true);
@@ -76,123 +91,320 @@ export default function RegisterPage() {
 
   return (
     <ProtectedRoute requireAuth={false}>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-1">
-            <CardTitle className="text-2xl font-bold text-center">
-              Create your account
-            </CardTitle>
-            <CardDescription className="text-center">
-              Join CarZone today and start your journey
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="username">Username</Label>
-                <Input
-                  id="username"
-                  type="text"
-                  placeholder="Enter your username"
-                  {...register("username")}
-                  className={errors.username ? "border-red-500" : ""}
-                />
-                {errors.username && (
-                  <p className="text-sm text-red-500">
-                    {errors.username.message}
-                  </p>
-                )}
-              </div>
+      <div className="min-h-screen bg-background flex items-center justify-center p-4 relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
 
-              <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="Enter your email"
-                  {...register("email")}
-                  className={errors.email ? "border-red-500" : ""}
-                />
-                {errors.email && (
-                  <p className="text-sm text-red-500">{errors.email.message}</p>
-                )}
-              </div>
+        {/* Animated shapes */}
+        <motion.div
+          className="absolute top-20 right-20 w-72 h-72 bg-accent/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
 
-              <div className="space-y-2">
-                <Label htmlFor="phone">Phone Number</Label>
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="Enter your phone number"
-                  {...register("phone")}
-                  className={errors.phone ? "border-red-500" : ""}
-                />
-                {errors.phone && (
-                  <p className="text-sm text-red-500">{errors.phone.message}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="password">Password</Label>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="Enter your password"
-                  {...register("password")}
-                  className={errors.password ? "border-red-500" : ""}
-                />
-                {errors.password && (
-                  <p className="text-sm text-red-500">
-                    {errors.password.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirm Password</Label>
-                <Input
-                  id="confirmPassword"
-                  type="password"
-                  placeholder="Confirm your password"
-                  {...register("confirmPassword")}
-                  className={errors.confirmPassword ? "border-red-500" : ""}
-                />
-                {errors.confirmPassword && (
-                  <p className="text-sm text-red-500">
-                    {errors.confirmPassword.message}
-                  </p>
-                )}
-              </div>
-
-              <Button
-                type="submit"
-                className="w-full bg-blue-600 hover:bg-blue-700"
-                disabled={isLoading}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="w-full max-w-md relative z-10"
+        >
+          <Card className="border-border bg-card/95 backdrop-blur-sm shadow-2xl">
+            <CardHeader className="space-y-3 pb-6">
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="flex justify-center"
               >
-                {isLoading ? (
-                  <div className="flex items-center justify-center">
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                    Creating account...
-                  </div>
-                ) : (
-                  "Create account"
-                )}
-              </Button>
-            </form>
-
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-600">
-                Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="text-blue-600 hover:text-blue-500 font-medium"
+                <div className="w-28 h-24  rounded-2xl flex items-center justify-center shadow-lg">
+                  <Image
+                                                            src="/logocar.png"
+                                                            alt="CarZone Logo"
+                                                            width={150}
+                                                            height={100}
+                                                            className="object-contain"
+                                                          />
+                </div>
+              </motion.div>
+              <CardTitle className="text-3xl font-bold text-center text-foreground">
+                Join CarZone
+              </CardTitle>
+              <CardDescription className="text-center text-muted-foreground text-base">
+                Create your account and start your journey
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.3 }}
+                  className="space-y-2"
                 >
-                  Sign in
-                </Link>
-              </p>
-            </div>
-          </CardContent>
-        </Card>
+                  <Label
+                    htmlFor="username"
+                    className="text-foreground font-medium"
+                  >
+                    Username
+                  </Label>
+                  <div className="relative">
+                    <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="username"
+                      type="text"
+                      placeholder="johndoe"
+                      {...register("username")}
+                      className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                        errors.username ? "border-destructive" : ""
+                      }`}
+                    />
+                  </div>
+                  {errors.username && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.username.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.35 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="email"
+                    className="text-foreground font-medium"
+                  >
+                    Email Address
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="you@example.com"
+                      {...register("email")}
+                      className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                        errors.email ? "border-destructive" : ""
+                      }`}
+                    />
+                  </div>
+                  {errors.email && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.email.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="phone"
+                    className="text-foreground font-medium"
+                  >
+                    Phone Number
+                  </Label>
+                  <div className="relative">
+                    <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="phone"
+                      type="tel"
+                      placeholder="+1 (555) 000-0000"
+                      {...register("phone")}
+                      className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                        errors.phone ? "border-destructive" : ""
+                      }`}
+                    />
+                  </div>
+                  {errors.phone && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.phone.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.45 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="password"
+                    className="text-foreground font-medium"
+                  >
+                    Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    <Input
+                      id="password"
+                      type="password"
+                      placeholder="••••••••"
+                      {...register("password")}
+                      className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                        errors.password ? "border-destructive" : ""
+                      }`}
+                    />
+                  </div>
+                  {errors.password && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.password.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.5 }}
+                  className="space-y-2"
+                >
+                  <Label
+                    htmlFor="confirmPassword"
+                    className="text-foreground font-medium"
+                  >
+                    Confirm Password
+                  </Label>
+                  <div className="relative">
+                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                    {password &&
+                      confirmPassword &&
+                      password === confirmPassword && (
+                        <CheckCircle2 className="absolute right-3 top-1/2 -translate-y-1/2 h-5 w-5 text-green-500" />
+                      )}
+                    <Input
+                      id="confirmPassword"
+                      type="password"
+                      placeholder="••••••••"
+                      {...register("confirmPassword")}
+                      className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                        errors.confirmPassword ? "border-destructive" : ""
+                      }`}
+                    />
+                  </div>
+                  {errors.confirmPassword && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.confirmPassword.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.55 }}
+                  className="pt-2"
+                >
+                  <Button
+                    type="submit"
+                    className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-semibold transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98]"
+                    disabled={isLoading}
+                  >
+                    {isLoading ? (
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        Creating account...
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-center gap-2">
+                        Create Account
+                        <ArrowRight className="h-4 w-4" />
+                      </div>
+                    )}
+                  </Button>
+                </motion.div>
+              </form>
+
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.6 }}
+                className="mt-6"
+              >
+                <div className="relative">
+                  <div className="absolute inset-0 flex items-center">
+                    <span className="w-full border-t border-border" />
+                  </div>
+                  <div className="relative flex justify-center text-xs uppercase">
+                    <span className="bg-card px-2 text-muted-foreground">
+                      Already have an account?
+                    </span>
+                  </div>
+                </div>
+                <div className="mt-6 text-center">
+                  <Link
+                    href="/auth/login"
+                    className="text-sm text-primary hover:text-primary/80 font-medium transition-colors inline-flex items-center gap-1 group"
+                  >
+                    Sign in instead
+                    <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                  </Link>
+                </div>
+              </motion.div>
+            </CardContent>
+          </Card>
+
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.7 }}
+            className="text-center mt-6 text-sm text-muted-foreground"
+          >
+            By creating an account, you agree to our{" "}
+            <Link href="#" className="text-primary hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="#" className="text-primary hover:underline">
+              Privacy Policy
+            </Link>
+          </motion.p>
+        </motion.div>
       </div>
     </ProtectedRoute>
   );
