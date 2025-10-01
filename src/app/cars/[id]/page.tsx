@@ -269,16 +269,11 @@ export default function CarDetailsPage() {
 
                     <div className="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg">
                       <div className="text-3xl font-bold text-green-600 mb-1">
-                        {formatPrice(car.price.rental_price_daily)}
+                        {formatPrice(car.rental_price)}
                         <span className="text-lg font-normal text-gray-600">
                           /day
                         </span>
                       </div>
-                      {car.price.sale_price && car.price.sale_price > 0 && (
-                        <div className="text-sm text-gray-600">
-                          Sale price: {formatPrice(car.price.sale_price)}
-                        </div>
-                      )}
                     </div>
 
                     {car.description && (
@@ -463,21 +458,11 @@ export default function CarDetailsPage() {
                     </h4>
                     <div className="space-y-2 pl-6">
                       <div className="flex justify-between">
-                        <span className="text-gray-600 text-sm">Daily:</span>
-                        <span className="font-medium text-sm text-green-600">
-                          {formatPrice(car.price.rental_price_daily)}
+                        <span className="text-gray-600 text-sm">
+                          Daily Rate:
                         </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 text-sm">Weekly:</span>
                         <span className="font-medium text-sm text-green-600">
-                          {formatPrice(car.price.rental_price_weekly)}
-                        </span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-gray-600 text-sm">Monthly:</span>
-                        <span className="font-medium text-sm text-green-600">
-                          {formatPrice(car.price.rental_price_monthly)}
+                          {formatPrice(car.rental_price)}
                         </span>
                       </div>
                     </div>

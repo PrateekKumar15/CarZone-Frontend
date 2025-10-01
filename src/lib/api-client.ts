@@ -22,12 +22,7 @@ export interface Car {
   location_city: string;
   location_state: string;
   location_country: string;
-  price: {
-    rental_price_daily: number;
-    rental_price_weekly: number;
-    rental_price_monthly: number;
-    sale_price?: number;
-  };
+  rental_price: number; // Daily rental price
   status: string;
   availability_type: string;
   is_available: boolean;
@@ -49,12 +44,50 @@ export interface Engine {
   transmission: string;
 }
 
+export interface Payment {
+  id: string;
+  booking_id: string;
+  razorpay_order_id?: string;
+  razorpay_payment_id?: string;
+  amount: number;
+  currency: string;
+  status: "pending" | "completed" | "failed" | "refunded" | "cancelled";
+  method: "razorpay" | "cash" | "card" | "upi" | "netbanking";
+  transaction_id?: string;
+  description: string;
+  notes?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaymentRequest {
+  booking_id: string;
+  amount: number;
+  method: "razorpay" | "cash" | "card" | "upi" | "netbanking";
+  description: string;
+  notes?: string;
+}
+
+export interface RazorpayOrderResponse {
+  id: string;
+  entity: string;
+  amount: number;
+  currency: string;
+  receipt: string;
+  status: string;
+}
+
+export interface PaymentVerificationRequest {
+  razorpay_order_id: string;
+  razorpay_payment_id: string;
+  razorpay_signature: string;
+}
+
 export interface Booking {
   id: string;
   customer_id: string;
   car_id: string;
   owner_id: string;
-  booking_type: string;
   start_date?: string;
   end_date?: string;
   total_amount: number;
@@ -221,7 +254,6 @@ class ApiClient {
     customer_id: string;
     car_id: string;
     owner_id: string;
-    booking_type: "rental" | "purchase";
     start_date?: string;
     end_date?: string;
     notes?: string;
@@ -243,6 +275,41 @@ class ApiClient {
     await this.request(`/bookings/${id}`, {
       method: "DELETE",
     });
+  }
+
+  // Payment methods
+  async createPayment(
+    paymentData: PaymentRequest
+  ): Promise<RazorpayOrderResponse> {
+    return this.request<RazorpayOrderResponse>("/payments", {
+      method: "POST",
+      body: JSON.stringify(paymentData),
+    });
+  }
+
+  async verifyPayment(
+    verificationData: PaymentVerificationRequest
+  ): Promise<Payment> {
+    console.log("API Client - Verifying payment with data:", verificationData);
+
+    // Note: Field validation is handled in the calling code with fallback logic for test environment
+
+    return this.request<Payment>("/payments/verify", {
+      method: "POST",
+      body: JSON.stringify(verificationData),
+    });
+  }
+
+  async getPaymentById(id: string): Promise<Payment> {
+    return this.request<Payment>(`/payments/${id}`);
+  }
+
+  async getPaymentByBookingId(bookingId: string): Promise<Payment> {
+    return this.request<Payment>(`/payments/booking/${bookingId}`);
+  }
+
+  async getPaymentsByUserId(userId: string): Promise<Payment[]> {
+    return this.request<Payment[]>(`/payments/user/${userId}`);
   }
 
   // Helper method to set token manually

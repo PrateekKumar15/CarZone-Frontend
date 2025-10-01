@@ -163,15 +163,7 @@ export default function BookingsPage() {
                     </div>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <Badge variant="outline" className="text-xs">
-                        {booking.booking_type || "rental"}
-                      </Badge>
-                    </div>
-
-                    {booking.booking_type === "rental" &&
-                    booking.start_date &&
-                    booking.end_date ? (
+                    {booking.start_date && booking.end_date ? (
                       <>
                         <div className="flex items-center gap-2 text-sm text-gray-600">
                           <Calendar className="h-4 w-4" />

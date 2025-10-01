@@ -121,16 +121,12 @@ export default function CarsPage() {
 
   const fuelTypes = ["all", ...new Set(cars.map((car) => car.fuel_type))];
 
-  const formatPrice = (
-    price: { rental_price_daily: number; sale_price?: number } | number
-  ) => {
-    const priceValue =
-      typeof price === "number" ? price : price.rental_price_daily;
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
       currency: "USD",
       minimumFractionDigits: 0,
-    }).format(priceValue);
+    }).format(price);
   };
 
   if (loading) {
@@ -285,7 +281,7 @@ export default function CarsPage() {
                     <div className="flex items-center justify-between pt-2 border-t">
                       <div>
                         <div className="text-2xl font-bold text-green-600">
-                          {formatPrice(car.price)}
+                          {formatPrice(car.rental_price)}
                         </div>
                         <div className="text-xs text-gray-500">per day</div>
                       </div>
