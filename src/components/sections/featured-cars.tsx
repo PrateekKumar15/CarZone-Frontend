@@ -1,11 +1,9 @@
 ﻿"use client";
 
-import { useRef, useEffect, useMemo } from "react";
+import { useRef, useMemo } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Fuel, Settings, ArrowRight, MapPin, Gauge } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
