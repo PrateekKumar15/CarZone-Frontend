@@ -59,7 +59,9 @@ const Footer = () => {
               <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
                 <Car className="h-6 w-6 text-primary-foreground" />
               </div>
-              <span className="text-2xl font-bold text-foreground">CarZone</span>
+              <span className="text-2xl font-bold text-foreground">
+                CarZone
+              </span>
             </div>
             <p className="text-muted-foreground mb-6 leading-relaxed">
               Your premier destination for luxury car rentals. Experience the
@@ -86,7 +88,9 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.1 }}
           >
-            <h3 className="text-lg font-semibold text-foreground mb-4">Company</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">
+              Company
+            </h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
@@ -107,7 +111,9 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
           >
-            <h3 className="text-lg font-semibold text-foreground mb-4">Services</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">
+              Services
+            </h3>
             <ul className="space-y-3">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
@@ -128,7 +134,9 @@ const Footer = () => {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.3 }}
           >
-            <h3 className="text-lg font-semibold text-foreground mb-4">Contact</h3>
+            <h3 className="text-lg font-semibold text-foreground mb-4">
+              Contact
+            </h3>
             <div className="space-y-4">
               <div className="flex items-start space-x-3">
                 <Phone className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
@@ -140,7 +148,9 @@ const Footer = () => {
               </div>
               <div className="flex items-start space-x-3">
                 <MapPin className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
-                <span className="text-muted-foreground">123 Car Street, Auto City, AC 12345</span>
+                <span className="text-muted-foreground">
+                  123 Car Street, Auto City, AC 12345
+                </span>
               </div>
             </div>
           </motion.div>
@@ -183,7 +193,7 @@ const Footer = () => {
           className="flex flex-col md:flex-row justify-between items-center gap-4"
         >
           <p className="text-muted-foreground text-sm">
-              CarZone. All rights reserved.
+            CarZone. All rights reserved.
           </p>
           <div className="flex flex-wrap justify-center gap-6 text-sm">
             <a

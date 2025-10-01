@@ -67,10 +67,14 @@ const About = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="about" className="py-20 bg-background relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="about"
+      className="py-20 bg-background relative overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-accent/5" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -101,7 +105,9 @@ const About = () => {
               className="about-stat bg-card rounded-xl p-6 text-center shadow-md border border-border hover:shadow-lg transition-all duration-300"
             >
               <stat.icon className="h-10 w-10 text-primary mx-auto mb-4" />
-              <div className="text-3xl font-bold text-foreground mb-2">{stat.value}</div>
+              <div className="text-3xl font-bold text-foreground mb-2">
+                {stat.value}
+              </div>
               <div className="text-sm text-muted-foreground">{stat.label}</div>
             </motion.div>
           ))}

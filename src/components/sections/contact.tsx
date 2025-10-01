@@ -71,10 +71,14 @@ const Contact = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="contact" className="py-20 bg-background relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="contact"
+      className="py-20 bg-background relative overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-accent/5" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -86,7 +90,8 @@ const Contact = () => {
             Get in <span className="text-primary">Touch</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Ready to book your dream car? Contact us today and let&apos;s make your journey unforgettable!
+            Ready to book your dream car? Contact us today and let&apos;s make
+            your journey unforgettable!
           </p>
         </motion.div>
 
@@ -106,9 +111,15 @@ const Contact = () => {
                   <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center mb-4 group-hover:bg-primary group-hover:scale-110 transition-all duration-300">
                     <info.icon className="h-6 w-6 text-primary group-hover:text-primary-foreground transition-colors" />
                   </div>
-                  <h3 className="text-lg font-bold text-foreground mb-2">{info.title}</h3>
-                  <p className="text-foreground font-medium mb-1">{info.value}</p>
-                  <p className="text-sm text-muted-foreground">{info.description}</p>
+                  <h3 className="text-lg font-bold text-foreground mb-2">
+                    {info.title}
+                  </h3>
+                  <p className="text-foreground font-medium mb-1">
+                    {info.value}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {info.description}
+                  </p>
                 </motion.div>
               ))}
             </div>
@@ -120,7 +131,9 @@ const Contact = () => {
               transition={{ duration: 0.8, delay: 0.4 }}
               className="mt-8 bg-card p-8 rounded-xl border border-border"
             >
-              <h3 className="text-2xl font-bold text-foreground mb-4">Why Choose CarZone?</h3>
+              <h3 className="text-2xl font-bold text-foreground mb-4">
+                Why Choose CarZone?
+              </h3>
               <ul className="space-y-3 text-muted-foreground">
                 <li className="flex items-start gap-3">
                   <span className="text-primary mt-1">✓</span>
@@ -149,11 +162,16 @@ const Contact = () => {
             transition={{ duration: 0.8 }}
             className="contact-form bg-card p-8 rounded-xl border border-border shadow-md"
           >
-            <h3 className="text-2xl font-bold text-foreground mb-6">Send us a Message</h3>
+            <h3 className="text-2xl font-bold text-foreground mb-6">
+              Send us a Message
+            </h3>
             <form className="space-y-6">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label htmlFor="firstName" className="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    htmlFor="firstName"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
                     First Name
                   </label>
                   <Input
@@ -164,7 +182,10 @@ const Contact = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="lastName" className="block text-sm font-medium text-foreground mb-2">
+                  <label
+                    htmlFor="lastName"
+                    className="block text-sm font-medium text-foreground mb-2"
+                  >
                     Last Name
                   </label>
                   <Input
@@ -177,7 +198,10 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="email"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Email
                 </label>
                 <Input
@@ -189,7 +213,10 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Phone Number
                 </label>
                 <Input
@@ -201,7 +228,10 @@ const Contact = () => {
               </div>
 
               <div>
-                <label htmlFor="message" className="block text-sm font-medium text-foreground mb-2">
+                <label
+                  htmlFor="message"
+                  className="block text-sm font-medium text-foreground mb-2"
+                >
                   Message
                 </label>
                 <Textarea

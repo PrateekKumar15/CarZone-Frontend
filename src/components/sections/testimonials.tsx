@@ -19,21 +19,24 @@ const Testimonials = () => {
       name: "John Smith",
       role: "Business Executive",
       rating: 5,
-      comment: "Excellent service and amazing cars! The booking process was seamless and the vehicle exceeded my expectations. Highly recommended for anyone looking for premium car rentals.",
+      comment:
+        "Excellent service and amazing cars! The booking process was seamless and the vehicle exceeded my expectations. Highly recommended for anyone looking for premium car rentals.",
       initials: "JS",
     },
     {
       name: "Sarah Johnson",
       role: "Travel Blogger",
       rating: 5,
-      comment: "Professional staff and premium vehicles. Great experience from start to finish! The attention to detail and customer service made my trip absolutely perfect.",
+      comment:
+        "Professional staff and premium vehicles. Great experience from start to finish! The attention to detail and customer service made my trip absolutely perfect.",
       initials: "SJ",
     },
     {
       name: "Mike Wilson",
       role: "Entrepreneur",
       rating: 5,
-      comment: "Best car rental service in town. The fleet is impressive and well-maintained. Will definitely use again for all my future car rental needs.",
+      comment:
+        "Best car rental service in town. The fleet is impressive and well-maintained. Will definitely use again for all my future car rental needs.",
       initials: "MW",
     },
   ];
@@ -56,10 +59,14 @@ const Testimonials = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} id="testimonials" className="py-20 bg-secondary/10 relative overflow-hidden">
+    <section
+      ref={sectionRef}
+      id="testimonials"
+      className="py-20 bg-secondary/10 relative overflow-hidden"
+    >
       {/* Background Pattern */}
       <div className="absolute inset-0 bg-gradient-to-br from-accent/5 to-primary/5" />
-      
+
       <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -71,7 +78,8 @@ const Testimonials = () => {
             What Our <span className="text-primary">Customers Say</span>
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Don&apos;t just take our word for it. Here&apos;s what our satisfied customers have to say about their experience with CarZone.
+            Don&apos;t just take our word for it. Here&apos;s what our satisfied
+            customers have to say about their experience with CarZone.
           </p>
         </motion.div>
 
@@ -93,10 +101,7 @@ const Testimonials = () => {
               {/* Rating */}
               <div className="flex mb-4 relative z-10">
                 {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="h-5 w-5 text-accent fill-current"
-                  />
+                  <Star key={i} className="h-5 w-5 text-accent fill-current" />
                 ))}
               </div>
 
@@ -116,7 +121,9 @@ const Testimonials = () => {
                   <p className="font-semibold text-foreground group-hover:text-primary transition-colors">
                     {testimonial.name}
                   </p>
-                  <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {testimonial.role}
+                  </p>
                 </div>
               </div>
             </motion.div>
@@ -131,7 +138,8 @@ const Testimonials = () => {
           className="text-center mt-12"
         >
           <p className="text-lg text-muted-foreground">
-            Join thousands of satisfied customers and experience the CarZone difference today!
+            Join thousands of satisfied customers and experience the CarZone
+            difference today!
           </p>
         </motion.div>
       </div>
