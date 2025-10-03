@@ -59,10 +59,8 @@ export default function PaymentSuccessPage() {
         setPayment(paymentData);
 
         // Update booking status to confirmed if payment is successful and status is still pending
-        if (
-          paymentData.status === "completed" &&
-          bookingData.status === "pending"
-        ) {
+        const bookingStatus = bookingData.status;
+        if (paymentData.status === "completed" && bookingStatus === "pending") {
           try {
             await apiClient.updateBookingStatus(bookingId, "confirmed");
             setBooking((prev) =>
@@ -75,14 +73,17 @@ export default function PaymentSuccessPage() {
               "Status update error (may be already confirmed):",
               statusError
             );
-            // If the booking was already confirmed, just update the local state
-            if (bookingData.status === "confirmed") {
+            // Check if status is confirmed after failed update attempt
+            const currentBookingData = await apiClient.getBookingById(
+              bookingId
+            );
+            if (currentBookingData.status === "confirmed") {
               setBooking((prev) =>
                 prev ? { ...prev, status: "confirmed" } : null
               );
             }
           }
-        } else if (bookingData.status === "confirmed") {
+        } else if (bookingStatus === "confirmed") {
           // Booking is already confirmed, no need to update
           console.log("Booking already confirmed, skipping status update");
         }

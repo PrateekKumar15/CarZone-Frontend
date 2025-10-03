@@ -13,6 +13,18 @@ import { logoutUser } from "@/store/slices/authSlice";
 import ProtectedRoute from "@/components/auth/protected-route";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
+import {
+  User,
+  Mail,
+  Phone,
+  Shield,
+  Calendar,
+  Car,
+  LogOut,
+  ArrowRight,
+  Sparkles,
+} from "lucide-react";
 
 export default function DashboardPage() {
   const { user } = useAppSelector((state) => state.auth);
@@ -29,68 +41,269 @@ export default function DashboardPage() {
     }
   };
 
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: (i: number) => ({
+      opacity: 1,
+      y: 0,
+      transition: {
+        delay: i * 0.1,
+        duration: 0.5,
+        ease: [0.4, 0, 0.2, 1] as const,
+      },
+    }),
+  };
+
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <Button onClick={handleLogout} variant="outline">
-              Logout
-            </Button>
-          </div>
+      <div className="min-h-screen bg-background relative overflow-hidden">
+        {/* Animated background gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
 
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            <Card>
-              <CardHeader>
-                <CardTitle>Welcome Back!</CardTitle>
-                <CardDescription>Good to see you again</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-2">
-                  <p>
-                    <span className="font-semibold">Username:</span>{" "}
-                    {user?.username}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Email:</span> {user?.email}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Phone:</span> {user?.phone}
-                  </p>
-                  <p>
-                    <span className="font-semibold">Role:</span> {user?.role}
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
+        {/* Animated shapes */}
+        <motion.div
+          className="absolute top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1, 1.2, 1],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
+        <motion.div
+          className="absolute bottom-20 left-20 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            opacity: [0.3, 0.5, 0.3],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
+        />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>My Bookings</CardTitle>
-                <CardDescription>Manage your car rentals</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button
-                  className="w-full"
-                  onClick={() => router.push("/bookings")}
-                >
-                  View Bookings
-                </Button>
-              </CardContent>
-            </Card>
+        <div className="relative z-10 p-6 md:p-8 lg:p-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
+            >
+              <div>
+                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2 flex items-center gap-3">
+                  <Sparkles className="h-8 w-8 text-primary" />
+                  Dashboard
+                </h1>
+                <p className="text-muted-foreground text-lg">
+                  Welcome back, {user?.username}!
+                </p>
+              </div>
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                className="border-border hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                size="lg"
+              >
+                <LogOut className="h-4 w-4 mr-2" />
+                Logout
+              </Button>
+            </motion.div>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Browse Cars</CardTitle>
-                <CardDescription>Find your perfect ride</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <Button className="w-full" onClick={() => router.push("/cars")}>
-                  Browse Cars
-                </Button>
-              </CardContent>
-            </Card>
+            {/* Stats Cards */}
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+              {/* User Profile Card */}
+              <motion.div
+                custom={0}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <User className="h-6 w-6 text-primary" />
+                      </div>
+                      <Shield className="h-5 w-5 text-muted-foreground" />
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      Profile Info
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Your account details
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <div className="flex items-center gap-3 text-foreground">
+                      <User className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">
+                          Username
+                        </p>
+                        <p className="font-medium">{user?.username}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <Mail className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Email</p>
+                        <p className="font-medium truncate">{user?.email}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground">
+                      <Phone className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Phone</p>
+                        <p className="font-medium">{user?.phone}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-foreground pt-2 border-t border-border">
+                      <Shield className="h-4 w-4 text-muted-foreground" />
+                      <div>
+                        <p className="text-xs text-muted-foreground">Role</p>
+                        <p className="font-medium capitalize">{user?.role}</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* My Bookings Card */}
+              <motion.div
+                custom={1}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Calendar className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      My Bookings
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Manage your car rentals
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      View and manage all your upcoming and past bookings in one
+                      place.
+                    </p>
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group/btn"
+                      onClick={() => router.push("/bookings")}
+                      size="lg"
+                    >
+                      View Bookings
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Browse Cars Card */}
+              <motion.div
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Car className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      Browse Cars
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Find your perfect ride
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      Explore our wide selection of vehicles and book your next
+                      adventure.
+                    </p>
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group/btn"
+                      onClick={() => router.push("/cars")}
+                      size="lg"
+                    >
+                      Browse Cars
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </div>
+
+            {/* Quick Actions Section */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg">
+                <CardHeader>
+                  <CardTitle className="text-2xl text-foreground flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    Quick Actions
+                  </CardTitle>
+                  <CardDescription className="text-muted-foreground">
+                    Shortcuts to common tasks
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => router.push("/cars")}
+                    >
+                      <Car className="h-6 w-6" />
+                      <span className="text-sm font-medium">Browse Cars</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => router.push("/bookings")}
+                    >
+                      <Calendar className="h-6 w-6" />
+                      <span className="text-sm font-medium">My Bookings</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => router.push("/#contact")}
+                    >
+                      <Mail className="h-6 w-6" />
+                      <span className="text-sm font-medium">Contact Us</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => router.push("/")}
+                    >
+                      <Sparkles className="h-6 w-6" />
+                      <span className="text-sm font-medium">Home</span>
+                    </Button>
+                  </div>
+                </CardContent>
+              </Card>
+            </motion.div>
           </div>
         </div>
       </div>
