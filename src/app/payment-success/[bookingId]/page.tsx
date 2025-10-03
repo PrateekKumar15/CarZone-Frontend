@@ -13,9 +13,14 @@ import {
   Car as CarIcon,
   CreditCard,
   ArrowLeft,
+  Calendar,
+  MapPin,
+  Clock,
+  Sparkles,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Link from "next/link";
+import { motion } from "framer-motion";
 
 export default function PaymentSuccessPage() {
   const [booking, setBooking] = useState<Booking | null>(null);
@@ -138,11 +143,25 @@ export default function PaymentSuccessPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="min-h-screen bg-background relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
+          <motion.div
+            className="absolute top-20 right-20 w-96 h-96 bg-green-500/10 rounded-full blur-3xl"
+            animate={{
+              scale: [1, 1.2, 1],
+              opacity: [0.3, 0.5, 0.3],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut",
+            }}
+          />
+
+          <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div className="space-y-6">
-              <Skeleton className="h-12 w-96 mx-auto" />
-              <Skeleton className="h-96" />
+              <Skeleton className="h-12 w-96 mx-auto rounded-xl" />
+              <Skeleton className="h-96 rounded-2xl" />
             </div>
           </div>
         </div>
@@ -153,14 +172,25 @@ export default function PaymentSuccessPage() {
   if (!booking || !payment) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-red-50 to-white py-8">
-          <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
-              Booking or Payment not found
-            </h1>
-            <Button onClick={() => router.push("/bookings")}>
-              View All Bookings
-            </Button>
+        <div className="min-h-screen bg-background relative overflow-hidden flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
+          <div className="relative z-10 text-center">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <CarIcon className="h-24 w-24 text-muted-foreground mx-auto mb-4" />
+              <h1 className="text-3xl font-bold text-foreground mb-4">
+                Booking or Payment not found
+              </h1>
+              <Button
+                onClick={() => router.push("/bookings")}
+                className="bg-gradient-to-r from-primary to-secondary hover:opacity-90"
+              >
+                View All Bookings
+              </Button>
+            </motion.div>
           </div>
         </div>
       </ProtectedRoute>
