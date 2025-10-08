@@ -11,8 +11,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { apiClient, Car } from "@/lib/api-client";
 import { useQuery } from "@tanstack/react-query";
 
-
-
 const FeaturedCars = () => {
   const router = useRouter();
   const sectionRef = useRef(null);
@@ -26,8 +24,6 @@ const FeaturedCars = () => {
   });
 
   const cars = useMemo(() => carsData || [], [carsData]);
-
-
 
   const handleViewCar = (carId: string) => {
     router.push(`/cars/${carId}`);
@@ -107,9 +103,6 @@ const FeaturedCars = () => {
                     <Badge className="bg-primary text-primary-foreground">
                       {car.fuel_type}
                     </Badge>
-                    {car.availability_type && (
-                      <Badge variant="secondary">{car.availability_type}</Badge>
-                    )}
                   </div>
                   <div className="absolute inset-0 bg-gradient-to-t from-background/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                 </div>

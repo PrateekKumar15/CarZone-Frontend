@@ -24,7 +24,6 @@ export interface Car {
   location_country: string;
   rental_price: number; // Daily rental price
   status: string;
-  availability_type: string;
   is_available: boolean;
   features: Record<string, unknown>;
   description: string;

@@ -24,6 +24,7 @@ import {
   LogOut,
   ArrowRight,
   Sparkles,
+  Plus,
 } from "lucide-react";
 
 export default function DashboardPage() {
@@ -115,7 +116,7 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* Stats Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-8">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
               {/* User Profile Card */}
               <motion.div
                 custom={0}
@@ -248,6 +249,44 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </motion.div>
+
+              {/* List Your Car Card */}
+              <motion.div
+                custom={3}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus className="h-6 w-6 text-green-600" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      List Your Car
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Earn money by renting
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      Share your vehicle and start earning passive income today.
+                    </p>
+                    <Button
+                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white group/btn"
+                      onClick={() => router.push("/cars/create")}
+                      size="lg"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add New Car
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
             </div>
 
             {/* Quick Actions Section */}
@@ -267,7 +306,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
                     <Button
                       variant="outline"
                       className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
@@ -283,6 +322,14 @@ export default function DashboardPage() {
                     >
                       <Calendar className="h-6 w-6" />
                       <span className="text-sm font-medium">My Bookings</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-green-500 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800"
+                      onClick={() => router.push("/cars/create")}
+                    >
+                      <Plus className="h-6 w-6" />
+                      <span className="text-sm font-medium">List Your Car</span>
                     </Button>
                     <Button
                       variant="outline"
