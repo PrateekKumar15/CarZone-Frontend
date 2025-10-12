@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, useCallback } from "react";
+import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, Car } from "@/lib/api-client";
 import { useAppSelector } from "@/hooks/redux";
 import ProtectedRoute from "@/components/auth/protected-route";
 import { Button } from "@/components/ui/button";
@@ -26,7 +26,6 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {
-  Car,
   ArrowLeft,
   Upload,
   X,
@@ -39,6 +38,7 @@ import {
   FileText,
   Image as ImageIcon,
 } from "lucide-react";
+import Image from "next/image";
 
 interface CarFormData {
   name: string;
@@ -87,12 +87,17 @@ const FEATURE_OPTIONS = [
   "Blind Spot Monitor",
 ];
 
-export default function CreateCarPage() {
+function EditCarPageContent() {
   const router = useRouter();
+  const params = useParams();
+  const carId = params.id as string;
   const { user } = useAppSelector((state) => state.auth);
+
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingCar, setIsFetchingCar] = useState(true);
   const [imageFiles, setImageFiles] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [existingImages, setExistingImages] = useState<string[]>([]);
 
   const [formData, setFormData] = useState<CarFormData>({
     name: "",
@@ -118,6 +123,54 @@ export default function CreateCarPage() {
     images: [],
     mileage: 0,
   });
+
+  const fetchCar = useCallback(async () => {
+    if (!carId) return;
+
+    try {
+      setIsFetchingCar(true);
+      const car = await apiClient.getCarById(carId);
+
+      // Check if user owns this car
+      if (car.owner_id !== user?.id) {
+        toast.error("You don't have permission to edit this car");
+        router.push("/cars/my-cars");
+        return;
+      }
+
+      // Populate form with existing data
+      setFormData({
+        name: car.name,
+        brand: car.brand,
+        model: car.model,
+        year: car.year,
+        fuel_type: car.fuel_type,
+        engine: car.engine,
+        location_city: car.location_city,
+        location_state: car.location_state,
+        location_country: car.location_country,
+        rental_price: car.rental_price,
+        status: car.status,
+        is_available: car.is_available,
+        features: car.features as Record<string, boolean>,
+        description: car.description,
+        images: car.images,
+        mileage: car.mileage,
+      });
+
+      setExistingImages(car.images);
+    } catch (error) {
+      console.error("Error fetching car:", error);
+      toast.error("Failed to load car details");
+      router.push("/cars/my-cars");
+    } finally {
+      setIsFetchingCar(false);
+    }
+  }, [carId, user?.id, router]);
+
+  useEffect(() => {
+    fetchCar();
+  }, [fetchCar]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -175,84 +228,48 @@ export default function CreateCarPage() {
     }));
   };
 
-  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-
     if (files.length === 0) return;
 
-    // Limit to 5 images
-    const remainingSlots = 5 - imageFiles.length;
-    const filesToAdd = files.slice(0, remainingSlots);
+    const totalImages =
+      existingImages.length + imagePreviews.length + files.length;
+    if (totalImages > 10) {
+      toast.error("Maximum 10 images allowed");
+      return;
+    }
 
-    setImageFiles((prev) => [...prev, ...filesToAdd]);
+    setImageFiles((prev) => [...prev, ...files]);
 
-    // Create previews
-    const newPreviews = await Promise.all(
-      filesToAdd.map((file) => {
-        return new Promise<string>((resolve) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.readAsDataURL(file);
-        });
-      })
-    );
-
-    setImagePreviews((prev) => [...prev, ...newPreviews]);
+    files.forEach((file) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreviews((prev) => [...prev, reader.result as string]);
+      };
+      reader.readAsDataURL(file);
+    });
   };
 
-  const removeImage = (index: number) => {
+  const removeNewImage = (index: number) => {
     setImageFiles((prev) => prev.filter((_, i) => i !== index));
     setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  const convertImagesToBase64 = async (): Promise<string[]> => {
-    return Promise.all(
-      imageFiles.map((file) => {
-        return new Promise<string>((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => resolve(reader.result as string);
-          reader.onerror = reject;
-          reader.readAsDataURL(file);
-        });
-      })
-    );
+  const removeExistingImage = (index: number) => {
+    setExistingImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!user) {
-      toast.error("You must be logged in to create a car");
+    if (!user?.id) {
+      toast.error("You must be logged in to update a car");
       return;
     }
 
     // Validation
-    if (!formData.name || formData.name.length < 3) {
-      toast.error("Car name must be at least 3 characters long");
-      return;
-    }
-
-    if (!formData.brand || formData.brand.length < 2) {
-      toast.error("Brand must be at least 2 characters long");
-      return;
-    }
-
-    if (!formData.model) {
-      toast.error("Model is required");
-      return;
-    }
-
-    if (formData.year < 1886 || formData.year > new Date().getFullYear()) {
-      toast.error("Please enter a valid year");
-      return;
-    }
-
-    if (
-      !formData.location_city ||
-      !formData.location_state ||
-      !formData.location_country
-    ) {
-      toast.error("Location information is required");
+    if (!formData.name || !formData.brand || !formData.model) {
+      toast.error("Please fill in all required fields");
       return;
     }
 
@@ -261,84 +278,61 @@ export default function CreateCarPage() {
       return;
     }
 
-    if (isNaN(formData.rental_price)) {
-      toast.error("Rental price must be a valid number");
-      return;
-    }
-
-    if (formData.engine.engine_size <= 0 || formData.engine.engine_size > 12) {
-      toast.error("Engine size must be between 0.1 and 12.0 liters");
-      return;
-    }
-
-    if (formData.engine.cylinders <= 0 || formData.engine.cylinders > 16) {
-      toast.error("Cylinders must be between 1 and 16");
-      return;
-    }
-
-    if (formData.engine.horsepower < 0 || formData.engine.horsepower > 2000) {
-      toast.error("Horsepower must be between 0 and 2000");
-      return;
-    }
-
-    if (formData.mileage < 0 || formData.mileage > 1000000) {
-      toast.error("Mileage must be between 0 and 1,000,000");
-      return;
-    }
-
-    if (imageFiles.length === 0) {
+    if (existingImages.length + imagePreviews.length === 0) {
       toast.error("Please upload at least one image");
       return;
     }
 
-    setIsLoading(true);
-
     try {
-      // Convert images to base64
-      const base64Images = await convertImagesToBase64();
+      setIsLoading(true);
 
-      // Prepare car data with explicit field mapping
+      // Convert new images to base64
+      const newBase64Images: string[] = [];
+      for (const file of imageFiles) {
+        const reader = new FileReader();
+        const base64 = await new Promise<string>((resolve) => {
+          reader.onloadend = () => resolve(reader.result as string);
+          reader.readAsDataURL(file);
+        });
+        newBase64Images.push(base64);
+      }
+
+      // Combine existing images with new base64 images
+      const allImages = [...existingImages, ...newBase64Images];
+
       const carData = {
+        ...formData,
         owner_id: user.id,
-        name: formData.name,
-        brand: formData.brand,
-        model: formData.model,
-        year: formData.year,
-        fuel_type: formData.fuel_type,
-        engine: {
-          engine_size: formData.engine.engine_size,
-          cylinders: formData.engine.cylinders,
-          horsepower: formData.engine.horsepower,
-          torque: formData.engine.torque,
-          transmission: formData.engine.transmission,
-        },
-        location_city: formData.location_city,
-        location_state: formData.location_state,
-        location_country: formData.location_country,
-        rental_price: Number(formData.rental_price), // Ensure it's a number
-        status: formData.status,
-        is_available: formData.is_available,
-        features: formData.features,
-        description: formData.description,
-        images: base64Images,
-        mileage: formData.mileage,
+        images: allImages,
       };
 
-      console.log("Submitting car data:", carData); // Debug log
+      console.log("Updating car data:", carData);
 
-      await apiClient.createCar(carData);
+      await apiClient.updateCar(carId, carData);
 
-      toast.success("Car created successfully!");
-      router.push("/dashboard");
-    } catch (error) {
-      console.error("Error creating car:", error);
-      toast.error(
-        error instanceof Error ? error.message : "Failed to create car"
-      );
+      toast.success("Car updated successfully!");
+      router.push("/cars/my-cars");
+    } catch (error: unknown) {
+      console.error("Error updating car:", error);
+      if (error instanceof Error) {
+        toast.error(`Failed to update car: ${error.message}`);
+      } else {
+        toast.error("Failed to update car. Please try again.");
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
+  if (isFetchingCar) {
+    return (
+      <ProtectedRoute>
+        <div className="min-h-screen bg-background flex items-center justify-center">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </ProtectedRoute>
+    );
+  }
 
   return (
     <ProtectedRoute>
@@ -348,6 +342,7 @@ export default function CreateCarPage() {
           <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
             className="mb-8"
           >
             <Button
@@ -355,9 +350,10 @@ export default function CreateCarPage() {
               onClick={() => router.back()}
               className="mb-6 hover:bg-muted"
             >
-              <ArrowLeft className="mr-2 h-4 w-4" />
+              <ArrowLeft className="h-4 w-4 mr-2" />
               Back
             </Button>
+
             <div className="flex items-center gap-4 mb-2">
               <motion.div
                 initial={{ scale: 0 }}
@@ -365,7 +361,7 @@ export default function CreateCarPage() {
                 transition={{ delay: 0.2, type: "spring" }}
                 className="p-4 bg-primary/10 rounded-2xl"
               >
-                <Car className="h-10 w-10 text-primary" />
+                <Settings className="h-10 w-10 text-primary" />
               </motion.div>
               <div>
                 <motion.h1
@@ -374,7 +370,7 @@ export default function CreateCarPage() {
                   transition={{ delay: 0.3 }}
                   className="text-4xl md:text-5xl font-bold text-foreground"
                 >
-                  Add New Car
+                  Edit Car
                 </motion.h1>
                 <motion.p
                   initial={{ opacity: 0, x: -20 }}
@@ -382,85 +378,84 @@ export default function CreateCarPage() {
                   transition={{ delay: 0.4 }}
                   className="text-muted-foreground mt-2 text-lg"
                 >
-                  Fill in the details to list your car for rental
+                  Update your car listing details
                 </motion.p>
               </div>
             </div>
           </motion.div>
 
-          <form onSubmit={handleSubmit}>
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-6">
             {/* Basic Information */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.5 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
-                      <Car className="h-5 w-5 text-primary" />
+                      <FileText className="h-5 w-5 text-primary" />
                     </div>
                     Basic Information
                   </CardTitle>
                   <CardDescription>
-                    Enter the basic details of your car
+                    Essential details about your car
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-6 pt-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="name">Car Name *</Label>
                       <Input
                         id="name"
                         name="name"
-                        placeholder="e.g., Tesla Model 3 Long Range"
                         value={formData.name}
                         onChange={handleInputChange}
+                        placeholder="e.g., Luxury Tesla Model 3"
                         required
                       />
                     </div>
+
                     <div>
                       <Label htmlFor="brand">Brand *</Label>
                       <Input
                         id="brand"
                         name="brand"
-                        placeholder="e.g., Tesla"
                         value={formData.brand}
                         onChange={handleInputChange}
+                        placeholder="e.g., Tesla"
                         required
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="model">Model *</Label>
                       <Input
                         id="model"
                         name="model"
-                        placeholder="e.g., Model 3"
                         value={formData.model}
                         onChange={handleInputChange}
+                        placeholder="e.g., Model 3"
                         required
                       />
                     </div>
+
                     <div>
                       <Label htmlFor="year">Year *</Label>
                       <Input
                         id="year"
                         name="year"
                         type="number"
-                        min="1886"
-                        max={new Date().getFullYear()}
                         value={formData.year}
                         onChange={handleInputChange}
+                        min={1900}
+                        max={new Date().getFullYear() + 1}
                         required
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                       <Label htmlFor="fuel_type">Fuel Type *</Label>
                       <Select
@@ -481,17 +476,16 @@ export default function CreateCarPage() {
                         </SelectContent>
                       </Select>
                     </div>
+
                     <div>
-                      <Label htmlFor="mileage">Mileage (km) *</Label>
+                      <Label htmlFor="mileage">Mileage (km)</Label>
                       <Input
                         id="mileage"
                         name="mileage"
                         type="number"
-                        min="0"
-                        max="1000000"
                         value={formData.mileage}
                         onChange={handleInputChange}
-                        required
+                        min={0}
                       />
                     </div>
                   </div>
@@ -505,7 +499,7 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -513,91 +507,78 @@ export default function CreateCarPage() {
                     </div>
                     Engine Specifications
                   </CardTitle>
-                  <CardDescription>
-                    Provide engine and performance details
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="engine.engine_size">
-                        Engine Size (L) *
+                        Engine Size (L)
                       </Label>
                       <Input
                         id="engine.engine_size"
                         name="engine.engine_size"
                         type="number"
                         step="0.1"
-                        min="0.1"
-                        max="12"
                         value={formData.engine.engine_size}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
+
                     <div>
-                      <Label htmlFor="engine.cylinders">Cylinders *</Label>
+                      <Label htmlFor="engine.cylinders">Cylinders</Label>
                       <Input
                         id="engine.cylinders"
                         name="engine.cylinders"
                         type="number"
-                        min="1"
-                        max="16"
                         value={formData.engine.cylinders}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
-                  </div>
 
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <Label htmlFor="engine.horsepower">Horsepower *</Label>
+                      <Label htmlFor="engine.horsepower">Horsepower (HP)</Label>
                       <Input
                         id="engine.horsepower"
                         name="engine.horsepower"
                         type="number"
-                        min="0"
-                        max="2000"
                         value={formData.engine.horsepower}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
+
                     <div>
-                      <Label htmlFor="engine.torque">Torque (Nm) *</Label>
+                      <Label htmlFor="engine.torque">Torque (Nm)</Label>
                       <Input
                         id="engine.torque"
                         name="engine.torque"
                         type="number"
-                        min="0"
-                        max="3000"
                         value={formData.engine.torque}
                         onChange={handleInputChange}
-                        required
                       />
                     </div>
-                  </div>
 
-                  <div>
-                    <Label htmlFor="engine.transmission">Transmission *</Label>
-                    <Select
-                      value={formData.engine.transmission}
-                      onValueChange={(value) =>
-                        handleSelectChange("engine.transmission", value)
-                      }
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {TRANSMISSION_TYPES.map((type) => (
-                          <SelectItem key={type} value={type}>
-                            {type}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
+                    <div className="md:col-span-2">
+                      <Label htmlFor="engine.transmission">
+                        Transmission *
+                      </Label>
+                      <Select
+                        value={formData.engine.transmission}
+                        onValueChange={(value) =>
+                          handleSelectChange("engine.transmission", value)
+                        }
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {TRANSMISSION_TYPES.map((type) => (
+                            <SelectItem key={type} value={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -609,7 +590,7 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.7 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -617,40 +598,36 @@ export default function CreateCarPage() {
                     </div>
                     Location
                   </CardTitle>
-                  <CardDescription>
-                    Where is your car located?
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div>
                       <Label htmlFor="location_city">City *</Label>
                       <Input
                         id="location_city"
                         name="location_city"
-                        placeholder="e.g., San Francisco"
                         value={formData.location_city}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
+
                     <div>
                       <Label htmlFor="location_state">State *</Label>
                       <Input
                         id="location_state"
                         name="location_state"
-                        placeholder="e.g., California"
                         value={formData.location_state}
                         onChange={handleInputChange}
                         required
                       />
                     </div>
+
                     <div>
                       <Label htmlFor="location_country">Country *</Label>
                       <Input
                         id="location_country"
                         name="location_country"
-                        placeholder="e.g., USA"
                         value={formData.location_country}
                         onChange={handleInputChange}
                         required
@@ -667,7 +644,7 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -675,12 +652,9 @@ export default function CreateCarPage() {
                     </div>
                     Pricing & Availability
                   </CardTitle>
-                  <CardDescription>
-                    Set your rental price and availability
-                  </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <Label htmlFor="rental_price">
                         Daily Rental Price ($) *
@@ -690,14 +664,15 @@ export default function CreateCarPage() {
                         name="rental_price"
                         type="number"
                         step="0.01"
-                        min="0"
                         value={formData.rental_price}
                         onChange={handleInputChange}
+                        min={0}
                         required
                       />
                     </div>
+
                     <div>
-                      <Label htmlFor="status">Status *</Label>
+                      <Label htmlFor="status">Status</Label>
                       <Select
                         value={formData.status}
                         onValueChange={(value) =>
@@ -716,21 +691,21 @@ export default function CreateCarPage() {
                         </SelectContent>
                       </Select>
                     </div>
-                  </div>
 
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="is_available"
-                      name="is_available"
-                      checked={formData.is_available}
-                      onChange={handleInputChange}
-                      className="h-4 w-4 rounded border-gray-300"
-                      aria-label="Available for rent immediately"
-                    />
-                    <Label htmlFor="is_available" className="cursor-pointer">
-                      Available for rent immediately
-                    </Label>
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="is_available"
+                        name="is_available"
+                        checked={formData.is_available}
+                        onChange={handleInputChange}
+                        className="h-4 w-4 rounded border-border"
+                        aria-label="Available for rent"
+                      />
+                      <Label htmlFor="is_available" className="cursor-pointer">
+                        Available for Rent
+                      </Label>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -742,7 +717,7 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.9 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -751,7 +726,7 @@ export default function CreateCarPage() {
                     Features
                   </CardTitle>
                   <CardDescription>
-                    Select the features your car has
+                    Select the features available in your car
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
@@ -791,7 +766,7 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.0 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
@@ -799,18 +774,14 @@ export default function CreateCarPage() {
                     </div>
                     Description
                   </CardTitle>
-                  <CardDescription>
-                    Provide additional details about your car
-                  </CardDescription>
                 </CardHeader>
                 <CardContent className="pt-6">
                   <Textarea
-                    id="description"
                     name="description"
-                    placeholder="Describe your car, its condition, special features, etc."
-                    rows={5}
                     value={formData.description}
                     onChange={handleInputChange}
+                    placeholder="Describe your car, its condition, unique features, etc."
+                    rows={5}
                     className="resize-none"
                   />
                 </CardContent>
@@ -823,58 +794,38 @@ export default function CreateCarPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1.1 }}
             >
-              <Card className="mb-6 hover:shadow-lg transition-shadow duration-300 border-border bg-card">
+              <Card className="hover:shadow-lg transition-shadow duration-300 border-border bg-card">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-3">
                     <div className="p-2 bg-primary/10 rounded-lg">
                       <ImageIcon className="h-5 w-5 text-primary" />
                     </div>
-                    Images *
+                    Images
                   </CardTitle>
                   <CardDescription>
-                    Upload up to 5 high-quality images of your car
+                    Upload images of your car (Max 10 images)
                   </CardDescription>
                 </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {/* Upload Button */}
-                    {imageFiles.length < 5 && (
-                      <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
-                        <label htmlFor="images" className="cursor-pointer">
-                          <Upload className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
-                          <p className="text-sm font-medium text-foreground mb-1">
-                            Click to upload images
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            PNG, JPG up to 10MB ({imageFiles.length}/5)
-                          </p>
-                          <input
-                            id="images"
-                            type="file"
-                            accept="image/*"
-                            multiple
-                            onChange={handleImageUpload}
-                            className="hidden"
-                          />
-                        </label>
-                      </div>
-                    )}
-
-                    {/* Image Previews */}
-                    {imagePreviews.length > 0 && (
-                      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-                        {imagePreviews.map((preview, index) => (
+                <CardContent className="space-y-4">
+                  {/* Existing Images */}
+                  {existingImages.length > 0 && (
+                    <div>
+                      <Label className="mb-2 block">Current Images</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {existingImages.map((image, index) => (
                           <div key={index} className="relative group">
-                            <img
-                              src={preview}
-                              alt={`Preview ${index + 1}`}
+                            <Image
+                              src={image}
+                              alt={`Car ${index + 1}`}
+                              width={200}
+                              height={150}
                               className="w-full h-32 object-cover rounded-lg"
                             />
                             <button
                               type="button"
-                              onClick={() => removeImage(index)}
-                              className="absolute top-2 right-2 p-1 bg-destructive text-destructive-foreground rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-                              aria-label={`Remove image ${index + 1}`}
+                              onClick={() => removeExistingImage(index)}
+                              className="absolute top-2 right-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              aria-label={`Remove existing image ${index + 1}`}
                               title="Remove image"
                             >
                               <X className="h-4 w-4" />
@@ -882,7 +833,62 @@ export default function CreateCarPage() {
                           </div>
                         ))}
                       </div>
-                    )}
+                    </div>
+                  )}
+
+                  {/* New Images */}
+                  {imagePreviews.length > 0 && (
+                    <div>
+                      <Label className="mb-2 block">New Images</Label>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        {imagePreviews.map((preview, index) => (
+                          <div key={index} className="relative group">
+                            <Image
+                              src={preview}
+                              alt={`New ${index + 1}`}
+                              width={200}
+                              height={150}
+                              className="w-full h-32 object-cover rounded-lg"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => removeNewImage(index)}
+                              className="absolute top-2 right-2 bg-destructive hover:bg-destructive/90 text-destructive-foreground p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                              aria-label={`Remove new image ${index + 1}`}
+                              title="Remove image"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Upload Button */}
+                  <div>
+                    <Label
+                      htmlFor="images"
+                      className="flex items-center justify-center w-full h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary transition-colors"
+                    >
+                      <div className="text-center">
+                        <Upload className="h-8 w-8 mx-auto mb-2 text-muted-foreground" />
+                        <p className="text-sm text-foreground">
+                          Click to upload more images
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG up to 10MB each
+                        </p>
+                      </div>
+                    </Label>
+                    <Input
+                      id="images"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
                   </div>
                 </CardContent>
               </Card>
@@ -906,25 +912,30 @@ export default function CreateCarPage() {
               </Button>
               <Button
                 type="submit"
-                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
                 disabled={isLoading}
+                className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground transition-all"
               >
                 {isLoading ? (
                   <>
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating...
+                    <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+                    Updating Car...
                   </>
                 ) : (
-                  <>
-                    <Car className="mr-2 h-4 w-4" />
-                    Create Car
-                  </>
+                  "Update Car"
                 )}
               </Button>
             </motion.div>
           </form>
         </div>
       </div>
+    </ProtectedRoute>
+  );
+}
+
+export default function EditCarPage() {
+  return (
+    <ProtectedRoute>
+      <EditCarPageContent />
     </ProtectedRoute>
   );
 }

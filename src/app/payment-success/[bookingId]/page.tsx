@@ -199,379 +199,506 @@ export default function PaymentSuccessPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-white py-8">
-        <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="min-h-screen bg-gradient-to-b from-background via-green-50/20 to-background py-12">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           {/* Back Button */}
           <Button
             variant="ghost"
             onClick={() => router.push("/bookings")}
-            className="mb-6"
+            className="mb-6 hover:bg-muted"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />
             Back to Bookings
           </Button>
 
-          {/* Success Header */}
-          <div className="text-center mb-8">
-            <div className="mx-auto w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-4">
-              <CheckCircle className="h-10 w-10 text-green-600" />
-            </div>
-            <h1 className="text-3xl font-bold text-gray-900 mb-2">
+          {/* Success Header with Animation */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-8"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+              className="mx-auto w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center mb-6 shadow-2xl"
+            >
+              <CheckCircle className="h-14 w-14 text-white" />
+            </motion.div>
+            <motion.h1
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.3 }}
+              className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent mb-3"
+            >
               Payment Successful!
-            </h1>
-            <p className="text-lg text-gray-600">
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+              className="text-lg text-muted-foreground max-w-2xl mx-auto"
+            >
               Your booking has been confirmed. You&apos;ll receive a
               confirmation email shortly.
-            </p>
-          </div>
+            </motion.p>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+              className="mt-4 flex items-center justify-center gap-2"
+            >
+              <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+              <span className="text-sm text-green-600 font-medium">
+                Booking Confirmed
+              </span>
+            </motion.div>
+          </motion.div>
 
           {/* Payment Details Card */}
-          <Card className="mb-6 border-green-200 shadow-lg">
-            <CardHeader className="bg-green-50">
-              <CardTitle className="flex items-center text-green-800">
-                <CreditCard className="h-5 w-5 mr-2" />
-                Payment Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Transaction ID</p>
-                  <p className="font-mono text-sm bg-gray-50 p-2 rounded border">
-                    {payment.razorpay_payment_id ||
-                      payment.transaction_id ||
-                      "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Order ID</p>
-                  <p className="font-mono text-sm bg-gray-50 p-2 rounded border">
-                    {payment.razorpay_order_id || "N/A"}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Amount Paid</p>
-                  <p className="font-bold text-lg text-green-600">
-                    {formatCurrency(payment.amount)}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Payment Method</p>
-                  <p className="font-medium capitalize">
-                    {payment.method === "razorpay"
-                      ? "Online (Razorpay)"
-                      : payment.method}
-                  </p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Payment Status</p>
-                  <Badge
-                    variant="default"
-                    className="bg-green-100 text-green-800 px-3 py-1"
-                  >
-                    ✓ {payment.status.toUpperCase()}
-                  </Badge>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-600 mb-1">Payment Date</p>
-                  <p className="font-medium">
-                    {formatDateTime(payment.updated_at)}
-                  </p>
-                </div>
-              </div>
-              {payment.description && (
-                <div className="mt-4 pt-4 border-t">
-                  <p className="text-sm text-gray-600 mb-1">Description</p>
-                  <p className="font-medium">{payment.description}</p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Booking Details Card */}
-          <Card className="mb-6 shadow-lg">
-            <CardHeader>
-              <CardTitle className="flex items-center">
-                <CarIcon className="h-5 w-5 mr-2" />
-                Booking Details
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                {/* Car Information */}
-                <div className="border-b pb-4">
-                  <h3 className="font-semibold text-xl mb-3 text-blue-900">
-                    {booking.car?.name ||
-                      (carLoading
-                        ? "Loading car details..."
-                        : `Car (ID: ${booking.car_id})`)}
-                  </h3>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                    <div>
-                      <p className="text-gray-600 mb-1">Brand & Model</p>
-                      {carLoading ? (
-                        <div className="h-5 bg-gray-200 rounded animate-pulse"></div>
-                      ) : (
-                        <p className="font-medium">
-                          {booking.car?.brand && booking.car?.model
-                            ? `${booking.car.brand} ${booking.car.model}`
-                            : "Car details unavailable"}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-gray-600 mb-1">Year</p>
-                      {carLoading ? (
-                        <div className="h-5 bg-gray-200 rounded animate-pulse"></div>
-                      ) : (
-                        <p className="font-medium">
-                          {booking.car?.year || "N/A"}
-                        </p>
-                      )}
-                    </div>
-                    <div>
-                      <p className="text-gray-600 mb-1">Location</p>
-                      {carLoading ? (
-                        <div className="h-5 bg-gray-200 rounded animate-pulse"></div>
-                      ) : (
-                        <p className="font-medium">
-                          {booking.car?.location_city &&
-                          booking.car?.location_state
-                            ? `${booking.car.location_city}, ${booking.car.location_state}`
-                            : "Location unavailable"}
-                        </p>
-                      )}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+          >
+            <Card className="mb-6 border-green-200 shadow-xl bg-gradient-to-br from-white to-green-50/30">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                <CardTitle className="flex items-center">
+                  <div className="p-2 bg-white/20 rounded-lg mr-3">
+                    <CreditCard className="h-5 w-5" />
+                  </div>
+                  Payment Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Transaction ID
+                    </p>
+                    <div className="flex items-center gap-2">
+                      <p className="font-mono text-sm bg-muted/50 p-3 rounded-lg border flex-1 break-all">
+                        {payment.razorpay_payment_id ||
+                          payment.transaction_id ||
+                          "N/A"}
+                      </p>
                     </div>
                   </div>
-                  {/* Additional car details if available */}
-                  {booking.car && !carLoading && (
-                    <div className="mt-3 pt-3 border-t">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 text-sm">
-                        {booking.car.fuel_type && (
-                          <div>
-                            <p className="text-gray-600 mb-1">Fuel Type</p>
-                            <p className="font-medium capitalize">
-                              {booking.car.fuel_type}
-                            </p>
-                          </div>
-                        )}
-                        {booking.car.engine?.transmission && (
-                          <div>
-                            <p className="text-gray-600 mb-1">Transmission</p>
-                            <p className="font-medium capitalize">
-                              {booking.car.engine.transmission}
-                            </p>
-                          </div>
-                        )}
-                        {booking.car.color && (
-                          <div>
-                            <p className="text-gray-600 mb-1">Color</p>
-                            <p className="font-medium capitalize">
-                              {booking.car.color}
-                            </p>
-                          </div>
-                        )}
-                        {booking.car.rental_price && (
-                          <div>
-                            <p className="text-gray-600 mb-1">Daily Rate</p>
-                            <p className="font-medium">
-                              {formatCurrency(booking.car.rental_price)}
-                            </p>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  {carLoading && (
-                    <div className="mt-3 pt-3 border-t">
-                      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                        {[1, 2, 3, 4].map((i) => (
-                          <div key={i}>
-                            <div className="h-4 bg-gray-200 rounded animate-pulse mb-2"></div>
-                            <div className="h-5 bg-gray-200 rounded animate-pulse"></div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* Rental Period Information */}
-                {booking.start_date && booking.end_date && (
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <h4 className="font-semibold text-blue-900 mb-3">
-                      Rental Period
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-                      <div>
-                        <p className="text-blue-600 mb-1">Start Date</p>
-                        <p className="font-medium">
-                          {formatDate(booking.start_date)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-blue-600 mb-1">End Date</p>
-                        <p className="font-medium">
-                          {formatDate(booking.end_date)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-blue-600 mb-1">Duration</p>
-                        <p className="font-medium">
-                          {calculateRentalDays(
-                            booking.start_date,
-                            booking.end_date
-                          )}{" "}
-                          day(s)
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {/* Booking Information */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Booking ID</p>
-                    <p className="font-mono text-sm bg-gray-50 p-2 rounded border">
-                      {booking.id}
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Order ID
+                    </p>
+                    <p className="font-mono text-sm bg-muted/50 p-3 rounded-lg border break-all">
+                      {payment.razorpay_order_id || "N/A"}
                     </p>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Status</p>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Amount Paid
+                    </p>
+                    <p className="font-bold text-2xl text-green-600">
+                      {formatCurrency(payment.amount)}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Payment Method
+                    </p>
+                    <p className="font-medium capitalize bg-muted/50 p-3 rounded-lg border">
+                      {payment.method === "razorpay"
+                        ? "Online (Razorpay)"
+                        : payment.method}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Payment Status
+                    </p>
                     <Badge
                       variant="default"
-                      className="bg-blue-100 text-blue-800 px-3 py-1"
+                      className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 text-sm"
                     >
-                      {booking.status.toUpperCase()}
+                      ✓ {payment.status.toUpperCase()}
                     </Badge>
                   </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Total Amount</p>
-                    <p className="font-bold text-lg text-blue-600">
-                      {formatCurrency(booking.total_amount)}
+                  <div className="space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Payment Date
+                    </p>
+                    <p className="font-medium bg-muted/50 p-3 rounded-lg border">
+                      {formatDateTime(payment.updated_at)}
                     </p>
                   </div>
                 </div>
-
-                {/* Booking Date */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">
-                      Booking Created
+                {payment.description && (
+                  <div className="mt-6 pt-6 border-t space-y-2">
+                    <p className="text-sm text-muted-foreground font-medium">
+                      Description
                     </p>
-                    <p className="font-medium">
-                      {formatDateTime(booking.created_at)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">Last Updated</p>
-                    <p className="font-medium">
-                      {formatDateTime(booking.updated_at)}
-                    </p>
-                  </div>
-                </div>
-
-                {booking.notes && (
-                  <div className="border-t pt-4">
-                    <p className="text-sm text-gray-600 mb-2">Special Notes</p>
-                    <p className="font-medium bg-yellow-50 p-3 rounded border-l-4 border-yellow-400">
-                      {booking.notes}
+                    <p className="font-medium bg-muted/50 p-3 rounded-lg border">
+                      {payment.description}
                     </p>
                   </div>
                 )}
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Booking Details Card */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.7 }}
+          >
+            <Card className="mb-6 shadow-xl border-border hover:shadow-2xl transition-shadow duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                <CardTitle className="flex items-center">
+                  <div className="p-2 bg-white/20 rounded-lg mr-3">
+                    <CarIcon className="h-5 w-5" />
+                  </div>
+                  Booking Details
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  {/* Car Information */}
+                  <div className="border-b pb-6">
+                    <h3 className="font-bold text-2xl mb-4 bg-gradient-to-r from-blue-600 to-cyan-600 bg-clip-text text-transparent">
+                      {booking.car?.name ||
+                        (carLoading
+                          ? "Loading car details..."
+                          : `Car (ID: ${booking.car_id})`)}
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Brand & Model
+                        </p>
+                        {carLoading ? (
+                          <div className="h-5 bg-muted animate-pulse rounded"></div>
+                        ) : (
+                          <p className="font-medium bg-muted/50 p-2 rounded-lg border">
+                            {booking.car?.brand && booking.car?.model
+                              ? `${booking.car.brand} ${booking.car.model}`
+                              : "Car details unavailable"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Year
+                        </p>
+                        {carLoading ? (
+                          <div className="h-5 bg-muted animate-pulse rounded"></div>
+                        ) : (
+                          <p className="font-medium bg-muted/50 p-2 rounded-lg border">
+                            {booking.car?.year || "N/A"}
+                          </p>
+                        )}
+                      </div>
+                      <div className="space-y-2">
+                        <p className="text-sm text-muted-foreground font-medium">
+                          Location
+                        </p>
+                        {carLoading ? (
+                          <div className="h-5 bg-muted animate-pulse rounded"></div>
+                        ) : (
+                          <p className="font-medium bg-muted/50 p-2 rounded-lg border">
+                            {booking.car?.location_city &&
+                            booking.car?.location_state
+                              ? `${booking.car.location_city}, ${booking.car.location_state}`
+                              : "Location unavailable"}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    {/* Additional car details if available */}
+                    {booking.car && !carLoading && (
+                      <div className="mt-4 pt-4 border-t">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {booking.car.fuel_type && (
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground font-medium">
+                                Fuel Type
+                              </p>
+                              <Badge variant="secondary" className="capitalize">
+                                {booking.car.fuel_type}
+                              </Badge>
+                            </div>
+                          )}
+                          {booking.car.engine?.transmission && (
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground font-medium">
+                                Transmission
+                              </p>
+                              <Badge variant="secondary" className="capitalize">
+                                {booking.car.engine.transmission}
+                              </Badge>
+                            </div>
+                          )}
+                          {booking.car.color && (
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground font-medium">
+                                Color
+                              </p>
+                              <Badge variant="secondary" className="capitalize">
+                                {booking.car.color}
+                              </Badge>
+                            </div>
+                          )}
+                          {booking.car.rental_price && (
+                            <div className="space-y-2">
+                              <p className="text-sm text-muted-foreground font-medium">
+                                Daily Rate
+                              </p>
+                              <p className="font-bold text-blue-600">
+                                {formatCurrency(booking.car.rental_price)}
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {carLoading && (
+                      <div className="mt-4 pt-4 border-t">
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                          {[1, 2, 3, 4].map((i) => (
+                            <div key={i} className="space-y-2">
+                              <div className="h-4 bg-muted rounded animate-pulse"></div>
+                              <div className="h-5 bg-muted rounded animate-pulse"></div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Rental Period Information */}
+                  {booking.start_date && booking.end_date && (
+                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
+                      <h4 className="font-bold text-blue-900 mb-4 flex items-center">
+                        <Calendar className="h-5 w-5 mr-2" />
+                        Rental Period
+                      </h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="space-y-2">
+                          <p className="text-sm text-blue-600 font-medium">
+                            Start Date
+                          </p>
+                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                            {formatDate(booking.start_date)}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm text-blue-600 font-medium">
+                            End Date
+                          </p>
+                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                            {formatDate(booking.end_date)}
+                          </p>
+                        </div>
+                        <div className="space-y-2">
+                          <p className="text-sm text-blue-600 font-medium">
+                            Duration
+                          </p>
+                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                            {calculateRentalDays(
+                              booking.start_date,
+                              booking.end_date
+                            )}{" "}
+                            day(s)
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Booking Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Booking ID
+                      </p>
+                      <p className="font-mono text-sm bg-muted/50 p-3 rounded-lg border break-all">
+                        {booking.id}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Status
+                      </p>
+                      <Badge
+                        variant="default"
+                        className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white px-4 py-2"
+                      >
+                        {booking.status.toUpperCase()}
+                      </Badge>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Total Amount
+                      </p>
+                      <p className="font-bold text-2xl text-blue-600">
+                        {formatCurrency(booking.total_amount)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Booking Date */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Booking Created
+                      </p>
+                      <p className="font-medium bg-muted/50 p-3 rounded-lg border">
+                        {formatDateTime(booking.created_at)}
+                      </p>
+                    </div>
+                    <div className="space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Last Updated
+                      </p>
+                      <p className="font-medium bg-muted/50 p-3 rounded-lg border">
+                        {formatDateTime(booking.updated_at)}
+                      </p>
+                    </div>
+                  </div>
+
+                  {booking.notes && (
+                    <div className="border-t pt-4 space-y-2">
+                      <p className="text-sm text-muted-foreground font-medium">
+                        Special Notes
+                      </p>
+                      <p className="font-medium bg-yellow-50 p-4 rounded-lg border-l-4 border-yellow-400 text-yellow-900">
+                        {booking.notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Summary Card */}
-          <Card className="mb-6 border-green-200 shadow-lg">
-            <CardHeader className="bg-gradient-to-r from-green-50 to-blue-50">
-              <CardTitle className="text-center text-green-800">
-                Payment Summary
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-6">
-              <div className="text-center space-y-2">
-                <p className="text-3xl font-bold text-green-600">
-                  {formatCurrency(payment.amount)}
-                </p>
-                <p className="text-gray-600">
-                  Successfully paid for {booking.car?.name}
-                </p>
-                {booking.start_date && booking.end_date && (
-                  <p className="text-sm text-gray-500">
-                    {calculateRentalDays(booking.start_date, booking.end_date)}{" "}
-                    day(s) rental from {formatDate(booking.start_date)} to{" "}
-                    {formatDate(booking.end_date)}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+          >
+            <Card className="mb-6 border-green-200 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+                <CardTitle className="text-center flex items-center justify-center">
+                  <Sparkles className="h-5 w-5 mr-2" />
+                  Payment Summary
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="text-center space-y-3">
+                  <p className="text-4xl font-bold bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                    {formatCurrency(payment.amount)}
                   </p>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Important Information */}
-          <Card className="mb-6 border-blue-200 shadow-lg">
-            <CardHeader className="bg-blue-50">
-              <CardTitle className="text-blue-800">
-                📋 Important Information
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="pt-4">
-              <div className="space-y-3 text-sm">
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>
-                    A confirmation email has been sent to your registered email
-                    address.
-                  </p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>
-                    Please carry a valid ID proof when picking up the vehicle.
-                  </p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>
-                    Contact the car owner for pickup location and timing
-                    details.
-                  </p>
-                </div>
-                <div className="flex items-start space-x-2">
-                  <span className="text-blue-600">•</span>
-                  <p>
-                    Save your booking ID:{" "}
-                    <span className="font-mono bg-gray-100 px-1 rounded">
-                      {booking.id}
+                  <p className="text-muted-foreground text-lg">
+                    Successfully paid for{" "}
+                    <span className="font-semibold text-foreground">
+                      {booking.car?.name}
                     </span>
                   </p>
+                  {booking.start_date && booking.end_date && (
+                    <p className="text-sm text-muted-foreground bg-white p-3 rounded-lg border inline-block">
+                      {calculateRentalDays(
+                        booking.start_date,
+                        booking.end_date
+                      )}{" "}
+                      day(s) rental from {formatDate(booking.start_date)} to{" "}
+                      {formatDate(booking.end_date)}
+                    </p>
+                  )}
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </motion.div>
+
+          {/* Important Information */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.9 }}
+          >
+            <Card className="mb-6 border-blue-200 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
+                <CardTitle className="flex items-center">
+                  <div className="p-2 bg-white/20 rounded-lg mr-3">
+                    <Clock className="h-5 w-5" />
+                  </div>
+                  Important Information
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <div className="space-y-4">
+                  <div className="flex items-start space-x-3 p-3 rounded-lg bg-blue-50/50 border border-blue-100">
+                    <span className="text-blue-600 text-lg">✓</span>
+                    <p className="text-sm text-muted-foreground">
+                      A confirmation email has been sent to your registered
+                      email address.
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3 p-3 rounded-lg bg-blue-50/50 border border-blue-100">
+                    <span className="text-blue-600 text-lg">✓</span>
+                    <p className="text-sm text-muted-foreground">
+                      Contact the car owner for pickup location and timing
+                      details.
+                    </p>
+                  </div>
+                  <div className="flex items-start space-x-3 p-3 rounded-lg bg-blue-50/50 border border-blue-100">
+                    <span className="text-blue-600 text-lg">✓</span>
+                    <p className="text-sm text-muted-foreground">
+                      Save your booking ID:{" "}
+                      <span className="font-mono bg-muted px-2 py-1 rounded border">
+                        {booking.id}
+                      </span>
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button asChild className="bg-blue-600 hover:bg-blue-700">
-              <Link href="/bookings">📅 View All Bookings</Link>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.0 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Button
+              asChild
+              className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 text-white shadow-lg hover:shadow-xl transition-all"
+            >
+              <Link href="/bookings">
+                <Calendar className="h-4 w-4 mr-2" />
+                View All Bookings
+              </Link>
             </Button>
             <Button
               variant="outline"
               asChild
-              className="border-green-600 text-green-600 hover:bg-green-50"
+              className="border-2 border-green-500 text-green-600 hover:bg-green-50 hover:border-green-600 shadow-lg hover:shadow-xl transition-all"
             >
-              <Link href="/cars">🚗 Book Another Car</Link>
+              <Link href="/cars">
+                <CarIcon className="h-4 w-4 mr-2" />
+                Book Another Car
+              </Link>
             </Button>
             <Button
               variant="outline"
               onClick={() => window.print()}
-              className="border-gray-600 text-gray-600 hover:bg-gray-50"
+              className="border-2 border-muted-foreground text-muted-foreground hover:bg-muted hover:border-foreground shadow-lg hover:shadow-xl transition-all"
             >
-              🖨️ Print Receipt
+              <MapPin className="h-4 w-4 mr-2" />
+              Print Receipt
             </Button>
-          </div>
+          </motion.div>
         </div>
       </div>
     </ProtectedRoute>

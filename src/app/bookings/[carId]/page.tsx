@@ -52,10 +52,11 @@ export default function BookingFormPage() {
           apiClient.getBookingsByCar(carId),
         ]);
         setCar(carResponse);
-        setExistingBookings(existingBookingsResponse);
+        setExistingBookings(existingBookingsResponse || []);
       } catch (error) {
         console.error("Error fetching data:", error);
         toast.error("Failed to fetch car details");
+        setExistingBookings([]); // Set empty array on error
         router.push("/cars");
       } finally {
         setLoading(false);
@@ -97,6 +98,8 @@ export default function BookingFormPage() {
 
   // Check if selected dates conflict with existing bookings
   const checkDateConflict = (start: string, end: string) => {
+    if (existingBookings.length === 0) return false;
+
     const selectedStart = new Date(start);
     const selectedEnd = new Date(end);
 

@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import Image from "next/image";
 import { useAppDispatch, useAppSelector } from "@/hooks/redux";
 import { logoutUser } from "@/store/slices/authSlice";
 import ProtectedRoute from "@/components/auth/protected-route";
@@ -57,37 +58,8 @@ export default function DashboardPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-background relative overflow-hidden">
-        {/* Animated background gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
-
-        {/* Animated shapes */}
-        <motion.div
-          className="absolute top-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-        <motion.div
-          className="absolute bottom-20 left-20 w-80 h-80 bg-accent/10 rounded-full blur-3xl"
-          animate={{
-            scale: [1.2, 1, 1.2],
-            opacity: [0.3, 0.5, 0.3],
-          }}
-          transition={{
-            duration: 8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
-        />
-
-        <div className="relative z-10 p-6 md:p-8 lg:p-12">
+      <div className="min-h-screen bg-background">
+        <div className="p-6 md:p-8 lg:p-12">
           <div className="max-w-7xl mx-auto">
             {/* Header */}
             <motion.div
@@ -96,9 +68,17 @@ export default function DashboardPage() {
               className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8"
             >
               <div>
-                <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-2 flex items-center gap-3">
-                  <Sparkles className="h-8 w-8 text-primary" />
-                  Dashboard
+                <h1 className="text-4xl md:text-5xl font-black text-foreground mb-2 flex items-center">
+                  {/* <Sparkles className="h-8 w-8 text-primary" /> */}
+                  <Image
+                    src="/logocar.png"
+                    alt="CarZone Logo"
+                    width={150}
+                    height={100}
+                  />
+                  <div className="special-font uppercase z-10 text-primary/90 text-2xl sm:text-4xl md:text-5xl pointer-events-none">
+                    D<b>a</b>shb<b>o</b>ard
+                  </div>
                 </h1>
                 <p className="text-muted-foreground text-lg">
                   Welcome back, {user?.username}!
@@ -107,7 +87,7 @@ export default function DashboardPage() {
               <Button
                 onClick={handleLogout}
                 variant="outline"
-                className="border-border hover:bg-destructive hover:text-destructive-foreground transition-colors"
+                className="transition-colors"
                 size="lg"
               >
                 <LogOut className="h-4 w-4 mr-2" />
@@ -116,7 +96,7 @@ export default function DashboardPage() {
             </motion.div>
 
             {/* Stats Cards */}
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 mb-8">
               {/* User Profile Card */}
               <motion.div
                 custom={0}
@@ -124,7 +104,7 @@ export default function DashboardPage() {
                 animate="visible"
                 variants={cardVariants}
               >
-                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <Card className="border-border bg-card hover:shadow-lg transition-all duration-300 group">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
                       <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
@@ -174,17 +154,92 @@ export default function DashboardPage() {
                 </Card>
               </motion.div>
 
-              {/* My Bookings Card */}
+              {/* My Cars Card */}
               <motion.div
                 custom={1}
                 initial="hidden"
                 animate="visible"
                 variants={cardVariants}
               >
-                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <Card className="border-border bg-card hover:shadow-lg transition-all duration-300 group">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-full bg-secondary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Car className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      My Cars
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Manage your listed vehicles
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      View and manage all your cars listed for rental.
+                    </p>
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group/btn"
+                      onClick={() => router.push("/cars/my-cars")}
+                      size="lg"
+                    >
+                      View My Cars
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* List Your Car Card */}
+              <motion.div
+                custom={2}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-card hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                        <Plus className="h-6 w-6 text-primary" />
+                      </div>
+                    </div>
+                    <CardTitle className="text-2xl text-foreground">
+                      List Your Car
+                    </CardTitle>
+                    <CardDescription className="text-muted-foreground">
+                      Earn money by renting
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-muted-foreground mb-4 text-sm">
+                      Share your vehicle and start earning passive income today.
+                    </p>
+                    <Button
+                      className="w-full bg-primary hover:bg-primary/90 text-primary-foreground group/btn"
+                      onClick={() => router.push("/cars/create")}
+                      size="lg"
+                    >
+                      <Plus className="h-4 w-4 mr-2" />
+                      Add New Car
+                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
+                    </Button>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* My Bookings Card */}
+              <motion.div
+                custom={3}
+                initial="hidden"
+                animate="visible"
+                variants={cardVariants}
+              >
+                <Card className="border-border bg-card hover:shadow-lg transition-all duration-300 group">
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Calendar className="h-6 w-6 text-primary" />
                       </div>
                     </div>
@@ -214,15 +269,15 @@ export default function DashboardPage() {
 
               {/* Browse Cars Card */}
               <motion.div
-                custom={2}
+                custom={4}
                 initial="hidden"
                 animate="visible"
                 variants={cardVariants}
               >
-                <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
+                <Card className="border-border bg-card hover:shadow-lg transition-all duration-300 group">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-full bg-accent/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                      <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                         <Car className="h-6 w-6 text-primary" />
                       </div>
                     </div>
@@ -249,44 +304,6 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
               </motion.div>
-
-              {/* List Your Car Card */}
-              <motion.div
-                custom={3}
-                initial="hidden"
-                animate="visible"
-                variants={cardVariants}
-              >
-                <Card className="border-border bg-gradient-to-br from-green-500/10 to-emerald-500/10 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 group">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <div className="w-12 h-12 rounded-full bg-green-500/20 flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <Plus className="h-6 w-6 text-green-600" />
-                      </div>
-                    </div>
-                    <CardTitle className="text-2xl text-foreground">
-                      List Your Car
-                    </CardTitle>
-                    <CardDescription className="text-muted-foreground">
-                      Earn money by renting
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground mb-4 text-sm">
-                      Share your vehicle and start earning passive income today.
-                    </p>
-                    <Button
-                      className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white group/btn"
-                      onClick={() => router.push("/cars/create")}
-                      size="lg"
-                    >
-                      <Plus className="h-4 w-4 mr-2" />
-                      Add New Car
-                      <ArrowRight className="h-4 w-4 ml-2 group-hover/btn:translate-x-1 transition-transform" />
-                    </Button>
-                  </CardContent>
-                </Card>
-              </motion.div>
             </div>
 
             {/* Quick Actions Section */}
@@ -295,7 +312,7 @@ export default function DashboardPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.4 }}
             >
-              <Card className="border-border bg-card/95 backdrop-blur-sm shadow-lg">
+              <Card className="border-border bg-card">
                 <CardHeader>
                   <CardTitle className="text-2xl text-foreground flex items-center gap-2">
                     <Sparkles className="h-5 w-5 text-primary" />
@@ -306,7 +323,7 @@ export default function DashboardPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+                  <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
                     <Button
                       variant="outline"
                       className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
@@ -318,6 +335,14 @@ export default function DashboardPage() {
                     <Button
                       variant="outline"
                       className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
+                      onClick={() => router.push("/cars/my-cars")}
+                    >
+                      <Car className="h-6 w-6" />
+                      <span className="text-sm font-medium">My Cars</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
                       onClick={() => router.push("/bookings")}
                     >
                       <Calendar className="h-6 w-6" />
@@ -325,7 +350,7 @@ export default function DashboardPage() {
                     </Button>
                     <Button
                       variant="outline"
-                      className="h-auto py-4 flex flex-col items-center gap-2 border-green-500 bg-green-50 hover:bg-green-100 text-green-700 hover:text-green-800"
+                      className="h-auto py-4 flex flex-col items-center gap-2 border-border hover:bg-accent hover:text-accent-foreground"
                       onClick={() => router.push("/cars/create")}
                     >
                       <Plus className="h-6 w-6" />
