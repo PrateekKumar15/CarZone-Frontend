@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { apiClient } from "@/lib/api-client";
 import { useAppSelector } from "@/hooks/redux";
+import Image from "next/image";
 import ProtectedRoute from "@/components/auth/protected-route";
 import { Button } from "@/components/ui/button";
 import {
@@ -32,7 +33,6 @@ import {
   X,
   Loader2,
   MapPin,
-  Fuel,
   Gauge,
   Settings,
   DollarSign,
@@ -865,7 +865,7 @@ export default function CreateCarPage() {
                       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         {imagePreviews.map((preview, index) => (
                           <div key={index} className="relative group">
-                            <img
+                            <Image
                               src={preview}
                               alt={`Preview ${index + 1}`}
                               className="w-full h-32 object-cover rounded-lg"

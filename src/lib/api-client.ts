@@ -206,6 +206,11 @@ class ApiClient {
     return this.request<Car>(`/cars/${id}`);
   }
 
+  async getCarsByOwner(ownerId: string): Promise<Car[]> {
+    const allCars = await this.getCars();
+    return allCars.filter((car) => car.owner_id === ownerId);
+  }
+
   async createCar(
     carData: Omit<Car, "id" | "created_at" | "updated_at">
   ): Promise<Car> {
