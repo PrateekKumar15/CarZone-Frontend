@@ -27,11 +27,25 @@ import {
   Sparkles,
   Plus,
 } from "lucide-react";
+import { useEffect } from "react";
 
 export default function DashboardPage() {
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
   const router = useRouter();
+
+  // Redirect renters to cars page
+  useEffect(() => {
+    if (user && user.role === "renter") {
+      toast.info("Renters cannot access the dashboard");
+      router.push("/cars");
+    }
+  }, [user, router]);
+
+  // Don't render dashboard for renters
+  if (user && user.role === "renter") {
+    return null;
+  }
 
   const handleLogout = async () => {
     try {

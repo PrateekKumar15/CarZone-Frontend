@@ -29,8 +29,16 @@ import {
   ArrowRight,
   Loader2,
   CheckCircle2,
+  Shield,
 } from "lucide-react";
 import Image from "next/image";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const registerSchema = z
   .object({
@@ -39,6 +47,9 @@ const registerSchema = z
     phone: z.string().min(10, "Phone number must be at least 10 digits"),
     password: z.string().min(8, "Password must be at least 8 characters"),
     confirmPassword: z.string(),
+    role: z.enum(["renter", "owner"]).refine((val) => val !== undefined, {
+      message: "Please select a role",
+    }),
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: "Passwords don't match",
@@ -49,6 +60,9 @@ type RegisterForm = z.infer<typeof registerSchema>;
 
 export default function RegisterPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedRole, setSelectedRole] = useState<"renter" | "owner">(
+    "renter"
+  );
   const dispatch = useAppDispatch();
   const router = useRouter();
 
@@ -57,8 +71,12 @@ export default function RegisterPage() {
     handleSubmit,
     formState: { errors },
     watch,
+    setValue,
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
+    defaultValues: {
+      role: "renter",
+    },
   });
 
   const password = watch("password");
@@ -73,7 +91,7 @@ export default function RegisterPage() {
           email: data.email,
           phone: data.phone,
           password: data.password,
-          role: "renter", // default role
+          role: data.role,
         })
       );
       if (registerUser.fulfilled.match(result)) {
@@ -137,12 +155,12 @@ export default function RegisterPage() {
               >
                 <div className="w-28 h-24  rounded-2xl flex items-center justify-center shadow-lg">
                   <Image
-                                                            src="/logocar.png"
-                                                            alt="CarZone Logo"
-                                                            width={150}
-                                                            height={100}
-                                                            className="object-contain"
-                                                          />
+                    src="/logocar.png"
+                    alt="CarZone Logo"
+                    width={150}
+                    height={100}
+                    className="object-contain"
+                  />
                 </div>
               </motion.div>
               <CardTitle className="text-3xl font-bold text-center text-foreground">
@@ -255,6 +273,62 @@ export default function RegisterPage() {
                       className="text-sm text-destructive"
                     >
                       {errors.phone.message}
+                    </motion.p>
+                  )}
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.425 }}
+                  className="space-y-2"
+                >
+                  <Label htmlFor="role" className="text-foreground font-medium">
+                    Account Type
+                  </Label>
+                  <div className="relative">
+                    <Shield className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground z-10 pointer-events-none" />
+                    <Select
+                      value={selectedRole}
+                      onValueChange={(value: "renter" | "owner") => {
+                        setSelectedRole(value);
+                        setValue("role", value);
+                      }}
+                    >
+                      <SelectTrigger
+                        className={`pl-10 h-11 bg-background border-border focus-visible:ring-primary ${
+                          errors.role ? "border-destructive" : ""
+                        }`}
+                      >
+                        <SelectValue placeholder="Select your role" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="renter">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Renter</span>
+                            <span className="text-xs text-muted-foreground">
+                              Browse and rent cars
+                            </span>
+                          </div>
+                        </SelectItem>
+                        <SelectItem value="owner">
+                          <div className="flex flex-col">
+                            <span className="font-medium">Owner</span>
+                            <span className="text-xs text-muted-foreground">
+                              List and manage cars
+                            </span>
+                          </div>
+                        </SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  {errors.role && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      className="text-sm text-destructive"
+                    >
+                      {errors.role.message}
                     </motion.p>
                   )}
                 </motion.div>

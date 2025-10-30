@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { apiClient } from "@/lib/api-client";
+import { apiClient, Car } from "@/lib/api-client";
 import { useAppSelector } from "@/hooks/redux";
 import ProtectedRoute from "@/components/auth/protected-route";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ import {
   X,
   Loader2,
   MapPin,
+  Fuel,
   Gauge,
   Settings,
   DollarSign,

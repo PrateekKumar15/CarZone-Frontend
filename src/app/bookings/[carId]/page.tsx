@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAppSelector } from "@/hooks/redux";
 import ProtectedRoute from "@/components/auth/protected-route";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -14,6 +15,7 @@ import { apiClient, Car, Booking } from "@/lib/api-client";
 import { formatCurrency } from "@/lib/pricing-utils";
 import { openRazorpayCheckout, RazorpayResponse } from "@/lib/razorpay-utils";
 import { toast } from "sonner";
+import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Car as CarIcon,
@@ -23,6 +25,8 @@ import {
   MapPin,
   Info,
   Calculator,
+  Clock,
+  AlertCircle,
 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
@@ -384,13 +388,21 @@ export default function BookingFormPage() {
   if (loading) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="space-y-6">
-              <Skeleton className="h-8 w-64" />
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                <Skeleton className="h-96" />
-                <Skeleton className="h-96" />
+        <Navbar />
+        <div className="min-h-screen bg-background">
+          <div className="p-6 md:p-8 lg:p-12">
+            <div className="max-w-7xl mx-auto">
+              <div className="space-y-6">
+                <Skeleton className="h-10 w-64" />
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                  <div className="lg:col-span-1">
+                    <Skeleton className="h-96" />
+                  </div>
+                  <div className="lg:col-span-2 space-y-6">
+                    <Skeleton className="h-64" />
+                    <Skeleton className="h-96" />
+                  </div>
+                </div>
               </div>
             </div>
           </div>
@@ -402,12 +414,29 @@ export default function BookingFormPage() {
   if (!car) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">Car not found</h1>
-            <Button onClick={() => router.push("/cars")} className="mt-4">
-              Back to Cars
-            </Button>
+        <Navbar />
+        <div className="min-h-screen bg-background">
+          <div className="p-6 md:p-8 lg:p-12">
+            <div className="max-w-7xl mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
+              >
+                <AlertCircle className="h-16 w-16 text-muted-foreground mx-auto" />
+                <h1 className="text-2xl font-bold text-foreground">
+                  Car not found
+                </h1>
+                <p className="text-muted-foreground">
+                  The car you&apos;re looking for doesn&apos;t exist or has been
+                  removed.
+                </p>
+                <Button onClick={() => router.push("/cars")} className="mt-4">
+                  <ArrowLeft className="h-4 w-4 mr-2" />
+                  Back to Cars
+                </Button>
+              </motion.div>
+            </div>
           </div>
         </div>
       </ProtectedRoute>
@@ -417,22 +446,35 @@ export default function BookingFormPage() {
   if (!car.is_available) {
     return (
       <ProtectedRoute>
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8">
-          <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h1 className="text-2xl font-bold text-gray-900">
-              Car Not Available
-            </h1>
-            <p className="text-gray-600 mt-2">
-              This car is currently not available for booking.
-            </p>
-            <div className="flex gap-4 justify-center mt-6">
-              <Button
-                variant="outline"
-                onClick={() => router.push(`/cars/${carId}`)}
+        <Navbar />
+        <div className="min-h-screen bg-background">
+          <div className="p-6 md:p-8 lg:p-12">
+            <div className="max-w-7xl mx-auto text-center">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="space-y-4"
               >
-                Back to Car Details
-              </Button>
-              <Button onClick={() => router.push("/cars")}>Browse Cars</Button>
+                <AlertCircle className="h-16 w-16 text-destructive mx-auto" />
+                <h1 className="text-2xl font-bold text-foreground">
+                  Car Not Available
+                </h1>
+                <p className="text-muted-foreground">
+                  This car is currently not available for booking.
+                </p>
+                <div className="flex gap-4 justify-center mt-6">
+                  <Button
+                    variant="outline"
+                    onClick={() => router.push(`/cars/${carId}`)}
+                  >
+                    <ArrowLeft className="h-4 w-4 mr-2" />
+                    Back to Car Details
+                  </Button>
+                  <Button onClick={() => router.push("/cars")}>
+                    Browse Cars
+                  </Button>
+                </div>
+              </motion.div>
             </div>
           </div>
         </div>
@@ -442,294 +484,369 @@ export default function BookingFormPage() {
 
   return (
     <ProtectedRoute>
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white py-8">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-8">
-            <div className="flex items-center gap-4">
+      <Navbar />
+      <div className="min-h-screen bg-background">
+        <div className="p-6 md:p-8 lg:p-12">
+          <div className="max-w-7xl mx-auto">
+            {/* Header */}
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-4 mb-8"
+            >
               <Button
                 variant="outline"
-                size="sm"
+                size="icon"
                 onClick={() => router.push(`/cars/${carId}`)}
-                className="flex items-center gap-2"
               >
                 <ArrowLeft className="h-4 w-4" />
-                Back to Car Details
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">
-                Book Your Car
-              </h1>
-            </div>
-          </div>
+              <div>
+                <h1 className="text-3xl font-bold text-foreground">
+                  Book Your Car
+                </h1>
+                <p className="text-muted-foreground">
+                  Complete the form to reserve your rental
+                </p>
+              </div>
+            </motion.div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {/* Car Summary Card */}
-            <div className="lg:col-span-1">
-              <Card className="border-0 shadow-lg sticky top-8">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <CarIcon className="h-5 w-5 text-blue-600" />
-                    Your Selection
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {/* Car Image */}
-                  <div className="aspect-video relative overflow-hidden rounded-lg bg-gray-100">
-                    {car.images && car.images.length > 0 ? (
-                      <Image
-                        src={car.images[0]}
-                        alt={`${car.brand} ${car.model}`}
-                        fill
-                        className="object-cover"
-                        onError={(e) => {
-                          // Hide broken images and show placeholder
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = "none";
-                        }}
-                        unoptimized={true} // Skip Next.js optimization for potentially broken URLs
-                      />
-                    ) : null}
-                    <div className="flex items-center justify-center h-full">
-                      <CarIcon className="h-12 w-12 text-gray-400" />
-                    </div>
-                  </div>
-
-                  {/* Car Details */}
-                  <div>
-                    <h3 className="font-bold text-lg text-gray-900">
-                      {car.name || `${car.brand} ${car.model}`}
-                    </h3>
-                    <div className="flex items-center text-gray-600 text-sm mt-1">
-                      <MapPin className="h-4 w-4 mr-1" />
-                      {car.year} • {car.location_city}, {car.location_state}
-                    </div>
-                  </div>
-
-                  {/* Pricing */}
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Daily Rate:</span>
-                      <span className="font-semibold">
-                        {formatPrice(car.rental_price)}
-                      </span>
-                    </div>
-                  </div>
-
-                  <Badge variant="default" className="w-full justify-center">
-                    Available
-                  </Badge>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* Booking Form */}
-            <div className="lg:col-span-2 space-y-6">
-              {/* Customer Information */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <User className="h-5 w-5 text-blue-600" />
-                    Customer Information
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label>Name</Label>
-                      <Input value={user?.username || ""} disabled />
-                    </div>
-                    <div>
-                      <Label>Email</Label>
-                      <Input value={user?.email || ""} disabled />
-                    </div>
-                  </div>
-                  <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded-lg">
-                    <Info className="h-4 w-4 inline mr-1" />
-                    Customer information is automatically filled from your
-                    profile.
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Booking Details */}
-              <Card className="border-0 shadow-lg">
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-blue-600" />
-                    Booking Details
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  {/* Date Selection */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <Label htmlFor="start-date">Start Date *</Label>
-                      <Input
-                        id="start-date"
-                        type="date"
-                        value={startDate}
-                        onChange={(e) => setStartDate(e.target.value)}
-                        min={new Date().toISOString().split("T")[0]}
-                        required
-                      />
-                    </div>
-                    <div>
-                      <Label htmlFor="end-date">End Date *</Label>
-                      <Input
-                        id="end-date"
-                        type="date"
-                        value={endDate}
-                        onChange={(e) => setEndDate(e.target.value)}
-                        min={
-                          startDate || new Date().toISOString().split("T")[0]
-                        }
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  {/* Quick date selection helper */}
-                  <div className="flex justify-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={useSuggestedDates}
-                      className="text-blue-600 border-blue-300 hover:bg-blue-50"
-                    >
-                      📅 Suggest Available Dates
-                    </Button>
-                  </div>
-
-                  {/* Show existing bookings */}
-                  {existingBookings.length > 0 && (
-                    <div className="mt-6">
-                      <Label className="text-sm font-medium text-red-700">
-                        ⚠️ Currently Booked Dates (Unavailable):
-                      </Label>
-                      <div className="mt-2 space-y-2 max-h-32 overflow-y-auto bg-red-50 border border-red-200 rounded-lg p-3">
-                        {existingBookings.map((booking) => (
-                          <div
-                            key={booking.id}
-                            className="text-xs bg-white border border-red-300 rounded p-2"
-                          >
-                            <div className="flex justify-between items-center">
-                              <span className="font-medium text-red-800">
-                                {booking.start_date && booking.end_date
-                                  ? `${new Date(
-                                      booking.start_date
-                                    ).toLocaleDateString()} - ${new Date(
-                                      booking.end_date
-                                    ).toLocaleDateString()}`
-                                  : "Dates TBD"}
-                              </span>
-                              <Badge variant="destructive" className="text-xs">
-                                {booking.status}
-                              </Badge>
-                            </div>
-                            {booking.notes && (
-                              <div className="text-gray-600 mt-1 text-xs">
-                                Note: {booking.notes}
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                      <div className="text-xs text-red-600 mt-2 font-medium">
-                        <Info className="h-3 w-3 inline mr-1" />
-                        Please select dates that don&apos;t overlap with the
-                        booked periods above.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Notes */}
-                  <div>
-                    <Label htmlFor="notes">Additional Notes</Label>
-                    <Textarea
-                      id="notes"
-                      placeholder="Any special requirements or notes..."
-                      value={notes}
-                      onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
-                        setNotes(e.target.value)
-                      }
-                      rows={3}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-
-              {/* Cost Summary */}
-              {startDate && endDate && (
-                <Card className="border-0 shadow-lg">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              {/* Car Summary Card */}
+              <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="lg:col-span-1"
+              >
+                <Card className="border-border bg-card sticky top-8">
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <Calculator className="h-5 w-5 text-green-600" />
-                      Cost Summary
+                    <CardTitle className="flex items-center gap-2 text-foreground">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                        <CarIcon className="h-5 w-5 text-primary" />
+                      </div>
+                      Your Selection
                     </CardTitle>
                   </CardHeader>
-                  <CardContent>
-                    <div className="space-y-3">
+                  <CardContent className="space-y-4">
+                    {/* Car Image */}
+                    <div className="aspect-video relative overflow-hidden rounded-lg bg-muted">
+                      {car.images && car.images.length > 0 ? (
+                        <Image
+                          src={car.images[0]}
+                          alt={`${car.brand} ${car.model}`}
+                          fill
+                          className="object-cover"
+                          onError={(e) => {
+                            // Hide broken images and show placeholder
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = "none";
+                          }}
+                          unoptimized={true} // Skip Next.js optimization for potentially broken URLs
+                        />
+                      ) : null}
+                      <div className="flex items-center justify-center h-full">
+                        <CarIcon className="h-12 w-12 text-muted-foreground" />
+                      </div>
+                    </div>
+
+                    {/* Car Details */}
+                    <div>
+                      <h3 className="font-bold text-lg text-foreground">
+                        {car.name || `${car.brand} ${car.model}`}
+                      </h3>
+                      <div className="flex items-center text-muted-foreground text-sm mt-1">
+                        <MapPin className="h-4 w-4 mr-1" />
+                        {car.year} • {car.location_city}, {car.location_state}
+                      </div>
+                    </div>
+
+                    {/* Pricing */}
+                    <div className="space-y-2 pt-2 border-t border-border">
                       <div className="flex justify-between">
-                        <span className="text-gray-600">
-                          Daily Rate ({getDuration()}{" "}
-                          {getDuration() === 1 ? "day" : "days"}):
+                        <span className="text-muted-foreground">
+                          Daily Rate:
                         </span>
-                        <span className="font-medium">
-                          {formatPrice(car.rental_price)} × {getDuration()}
+                        <span className="font-semibold text-foreground">
+                          {formatPrice(car.rental_price)}
                         </span>
                       </div>
-                      <div className="border-t pt-3">
-                        <div className="flex justify-between items-center">
-                          <span className="text-lg font-semibold">
-                            Total Cost:
-                          </span>
-                          <span className="text-2xl font-bold text-green-600">
-                            {formatPrice(calculateTotalCost())}
-                          </span>
+                    </div>
+
+                    <Badge className="w-full justify-center bg-primary/10 text-primary hover:bg-primary/20">
+                      Available
+                    </Badge>
+                  </CardContent>
+                </Card>
+              </motion.div>
+
+              {/* Booking Form */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* Customer Information */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-foreground">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <User className="h-5 w-5 text-primary" />
+                        </div>
+                        Customer Information
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label className="text-foreground">Name</Label>
+                          <Input
+                            value={user?.username || ""}
+                            disabled
+                            className="bg-muted text-muted-foreground"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-foreground">Email</Label>
+                          <Input
+                            value={user?.email || ""}
+                            disabled
+                            className="bg-muted text-muted-foreground"
+                          />
+                        </div>
+                      </div>
+                      <div className="text-sm text-muted-foreground bg-primary/5 p-3 rounded-lg border border-primary/20">
+                        <Info className="h-4 w-4 inline mr-1 text-primary" />
+                        Customer information is automatically filled from your
+                        profile.
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Booking Details */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 }}
+                >
+                  <Card className="border-border bg-card">
+                    <CardHeader>
+                      <CardTitle className="flex items-center gap-2 text-foreground">
+                        <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                          <Calendar className="h-5 w-5 text-primary" />
+                        </div>
+                        Booking Details
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-6">
+                      {/* Date Selection */}
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <Label
+                            htmlFor="start-date"
+                            className="text-foreground"
+                          >
+                            Start Date *
+                          </Label>
+                          <Input
+                            id="start-date"
+                            type="date"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                            min={new Date().toISOString().split("T")[0]}
+                            required
+                            className="bg-background border-border"
+                          />
+                        </div>
+                        <div>
+                          <Label htmlFor="end-date" className="text-foreground">
+                            End Date *
+                          </Label>
+                          <Input
+                            id="end-date"
+                            type="date"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                            min={
+                              startDate ||
+                              new Date().toISOString().split("T")[0]
+                            }
+                            required
+                            className="bg-background border-border"
+                          />
                         </div>
                       </div>
 
-                      <div className="text-sm text-gray-600 bg-yellow-50 p-3 rounded-lg">
-                        <Info className="h-4 w-4 inline mr-1" />
-                        Final pricing and payment will be handled by the car
-                        owner.
+                      {/* Quick date selection helper */}
+                      <div className="flex justify-center">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={useSuggestedDates}
+                          className="gap-2"
+                        >
+                          <Calendar className="h-4 w-4" />
+                          Suggest Available Dates
+                        </Button>
                       </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
 
-              {/* Submit Button */}
-              <Card className="border-0 shadow-lg">
-                <CardContent className="pt-6">
-                  <Button
-                    onClick={handleBooking}
-                    disabled={!startDate || !endDate || bookingLoading}
-                    size="lg"
-                    className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-4 text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+                      {/* Show existing bookings */}
+                      {existingBookings.length > 0 && (
+                        <div className="mt-6">
+                          <Label className="text-sm font-medium text-destructive flex items-center gap-2">
+                            <AlertCircle className="h-4 w-4" />
+                            Currently Booked Dates (Unavailable)
+                          </Label>
+                          <div className="mt-2 space-y-2 max-h-32 overflow-y-auto bg-destructive/5 border border-destructive/20 rounded-lg p-3">
+                            {existingBookings.map((booking) => (
+                              <div
+                                key={booking.id}
+                                className="text-xs bg-background border border-border rounded p-2"
+                              >
+                                <div className="flex justify-between items-center">
+                                  <span className="font-medium text-foreground flex items-center gap-2">
+                                    <Clock className="h-3 w-3" />
+                                    {booking.start_date && booking.end_date
+                                      ? `${new Date(
+                                          booking.start_date
+                                        ).toLocaleDateString()} - ${new Date(
+                                          booking.end_date
+                                        ).toLocaleDateString()}`
+                                      : "Dates TBD"}
+                                  </span>
+                                  <Badge
+                                    variant="destructive"
+                                    className="text-xs"
+                                  >
+                                    {booking.status}
+                                  </Badge>
+                                </div>
+                                {booking.notes && (
+                                  <div className="text-muted-foreground mt-1 text-xs">
+                                    Note: {booking.notes}
+                                  </div>
+                                )}
+                              </div>
+                            ))}
+                          </div>
+                          <div className="text-xs text-destructive mt-2 font-medium flex items-center gap-1">
+                            <Info className="h-3 w-3" />
+                            Please select dates that don&apos;t overlap with the
+                            booked periods above.
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Notes */}
+                      <div>
+                        <Label htmlFor="notes" className="text-foreground">
+                          Additional Notes
+                        </Label>
+                        <Textarea
+                          id="notes"
+                          placeholder="Any special requirements or notes..."
+                          value={notes}
+                          onChange={(
+                            e: React.ChangeEvent<HTMLTextAreaElement>
+                          ) => setNotes(e.target.value)}
+                          rows={3}
+                          className="bg-background border-border"
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+
+                {/* Cost Summary */}
+                {startDate && endDate && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
                   >
-                    {bookingLoading ? (
-                      <>
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
-                        Processing...
-                      </>
-                    ) : (
-                      <>
-                        <CreditCard className="h-5 w-5 mr-2" />
-                        Book Rental
-                      </>
-                    )}
-                  </Button>
+                    <Card className="border-border bg-card">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-foreground">
+                          <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                            <Calculator className="h-5 w-5 text-primary" />
+                          </div>
+                          Cost Summary
+                        </CardTitle>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="space-y-3">
+                          <div className="flex justify-between">
+                            <span className="text-muted-foreground">
+                              Daily Rate ({getDuration()}{" "}
+                              {getDuration() === 1 ? "day" : "days"}):
+                            </span>
+                            <span className="font-medium text-foreground">
+                              {formatPrice(car.rental_price)} × {getDuration()}
+                            </span>
+                          </div>
+                          <div className="border-t border-border pt-3">
+                            <div className="flex justify-between items-center">
+                              <span className="text-lg font-semibold text-foreground">
+                                Total Cost:
+                              </span>
+                              <span className="text-2xl font-bold text-primary">
+                                {formatPrice(calculateTotalCost())}
+                              </span>
+                            </div>
+                          </div>
 
-                  <div className="text-center mt-4">
-                    <p className="text-sm text-gray-600">
-                      By proceeding, you agree to our terms of service and the
-                      car owner will be notified of your booking request.
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                          <div className="text-sm text-muted-foreground bg-primary/5 p-3 rounded-lg border border-primary/20">
+                            <Info className="h-4 w-4 inline mr-1 text-primary" />
+                            Final pricing and payment will be handled by the car
+                            owner.
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                )}
+
+                {/* Submit Button */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.5 }}
+                >
+                  <Card className="border-border bg-card">
+                    <CardContent className="pt-6">
+                      <Button
+                        onClick={handleBooking}
+                        disabled={!startDate || !endDate || bookingLoading}
+                        size="lg"
+                        className="w-full font-semibold transition-all duration-300 hover:scale-[1.02] active:scale-[0.98]"
+                      >
+                        {bookingLoading ? (
+                          <>
+                            <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2" />
+                            Processing...
+                          </>
+                        ) : (
+                          <>
+                            <CreditCard className="h-5 w-5 mr-2" />
+                            Book Rental
+                          </>
+                        )}
+                      </Button>
+
+                      <div className="text-center mt-4">
+                        <p className="text-sm text-muted-foreground">
+                          By proceeding, you agree to our terms of service and
+                          the car owner will be notified of your booking
+                          request.
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </div>
             </div>
           </div>
         </div>

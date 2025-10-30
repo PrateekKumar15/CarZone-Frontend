@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import ProtectedRoute from "@/components/auth/protected-route";
+import Navbar from "@/components/layout/Navbar/Navbar";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -159,6 +160,7 @@ export default function CarsPage() {
   if (loading) {
     return (
       <ProtectedRoute>
+        <Navbar />
         <div className="min-h-screen bg-background relative overflow-hidden">
           {/* Animated background */}
           <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
@@ -202,6 +204,7 @@ export default function CarsPage() {
 
   return (
     <ProtectedRoute>
+      <Navbar />
       <div className="min-h-screen bg-background relative overflow-hidden">
         {/* Animated background gradient */}
         <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-secondary/5 to-accent/5" />
