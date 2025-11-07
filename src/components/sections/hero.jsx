@@ -67,15 +67,9 @@ const Hero = () => {
 
     return (
         <div className="relative h-dvh w-screen overflow-hidden">
-            {isloading && (
-                <div className="flex items-center justify-center absolute h-dvh w-screen z-[100] overflow-hidden bg-background">
-                    <div className="three-body">
-                        <div className="three-body__dot"></div>
-                        <div className="three-body__dot"></div>
-                        <div className="three-body__dot"></div>
-                    </div>
-                </div>
-            )}
+            
+                
+            
 
             <div id="video-frame" className="relative z-10 h-dvh w-screen overflow-hidden rounded-lg">
                 <div>
@@ -140,7 +134,7 @@ const Hero = () => {
             </div>
 
             {/* Bottom decorative text */}
-            <div className="special-font hero-heading z-10 absolute bottom-5 right-5 text-primary/90 text-2xl sm:text-4xl md:text-7xl pointer-events-none">
+            <div className="special-font hero-heading z-10 absolute bottom-5 right-5 text-primary/90 text-2xl sm:text-4xl md:text-7xl lg:text-9xl pointer-events-none">
                 C<b>a</b>rZ<b>o</b>ne
             </div>
         </div>

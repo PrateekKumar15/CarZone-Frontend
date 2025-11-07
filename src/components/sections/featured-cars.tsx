@@ -73,14 +73,9 @@ const FeaturedCars = () => {
 
         {!isLoading && cars.length > 0 && (
           <div className="cars-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {cars.map((car: Car, index: number) => (
+            {cars.map((car: Car) => (
               <motion.div
                 key={car.id}
-                layout
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
                 className="car-card group bg-card rounded-xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden border border-border"
               >
                 <div className="relative h-64 overflow-hidden bg-muted">

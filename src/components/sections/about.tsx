@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef} from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -38,33 +38,7 @@ const About = () => {
     },
   ];
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".about-stat", {
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        scrollTrigger: {
-          trigger: ".stats-grid",
-          start: "top 85%",
-        },
-      });
 
-      gsap.from(".about-feature", {
-        x: -50,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: ".features-grid",
-          start: "top 85%",
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section

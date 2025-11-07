@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useEffect } from "react";
+import { useRef } from "react";
 import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -43,32 +43,7 @@ const Contact = () => {
     },
   ];
 
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      gsap.from(".contact-info-card", {
-        y: 60,
-        opacity: 0,
-        duration: 0.8,
-        stagger: 0.15,
-        scrollTrigger: {
-          trigger: ".contact-info-grid",
-          start: "top 85%",
-        },
-      });
 
-      gsap.from(".contact-form", {
-        x: 50,
-        opacity: 0,
-        duration: 1,
-        scrollTrigger: {
-          trigger: ".contact-form",
-          start: "top 85%",
-        },
-      });
-    }, sectionRef);
-
-    return () => ctx.revert();
-  }, []);
 
   return (
     <section

@@ -37,7 +37,7 @@ export default function DashboardPage() {
   // Redirect renters to cars page
   useEffect(() => {
     if (user && user.role === "renter") {
-      toast.info("Renters cannot access the dashboard");
+      // toast.info("Renters cannot access the dashboard");
       router.push("/cars");
     }
   }, [user, router]);

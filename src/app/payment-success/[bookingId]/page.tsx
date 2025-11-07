@@ -262,7 +262,7 @@ export default function PaymentSuccessPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.6 }}
           >
-            <Card className="mb-6 border-green-200 shadow-xl bg-gradient-to-br from-white to-green-50/30">
+            <Card className="mb-6 border-green-200 shadow-xl bg-background">
               <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
                 <CardTitle className="flex items-center">
                   <div className="p-2 bg-white/20 rounded-lg mr-3">
@@ -274,7 +274,7 @@ export default function PaymentSuccessPage() {
               <CardContent className="pt-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-foreground font-medium">
                       Transaction ID
                     </p>
                     <div className="flex items-center gap-2">
@@ -286,7 +286,7 @@ export default function PaymentSuccessPage() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent font-medium">
                       Order ID
                     </p>
                     <p className="font-mono text-sm bg-muted/50 p-3 rounded-lg border break-all">
@@ -294,7 +294,7 @@ export default function PaymentSuccessPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent font-medium">
                       Amount Paid
                     </p>
                     <p className="font-bold text-2xl text-green-600">
@@ -302,7 +302,7 @@ export default function PaymentSuccessPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent font-medium">
                       Payment Method
                     </p>
                     <p className="font-medium capitalize bg-muted/50 p-3 rounded-lg border">
@@ -312,7 +312,7 @@ export default function PaymentSuccessPage() {
                     </p>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent font-medium">
                       Payment Status
                     </p>
                     <Badge
@@ -323,7 +323,7 @@ export default function PaymentSuccessPage() {
                     </Badge>
                   </div>
                   <div className="space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent font-medium">
                       Payment Date
                     </p>
                     <p className="font-medium bg-muted/50 p-3 rounded-lg border">
@@ -333,7 +333,7 @@ export default function PaymentSuccessPage() {
                 </div>
                 {payment.description && (
                   <div className="mt-6 pt-6 border-t space-y-2">
-                    <p className="text-sm text-muted-foreground font-medium">
+                    <p className="text-sm text-muted-accent  font-medium">
                       Description
                     </p>
                     <p className="font-medium bg-muted/50 p-3 rounded-lg border">
@@ -351,14 +351,9 @@ export default function PaymentSuccessPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.7 }}
           >
-            <Card className="mb-6 shadow-xl border-border hover:shadow-2xl transition-shadow duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
-                <CardTitle className="flex items-center">
-                  <div className="p-2 bg-white/20 rounded-lg mr-3">
-                    <CarIcon className="h-5 w-5" />
-                  </div>
-                  Booking Details
-                </CardTitle>
+            <Card className="mb-6 shadow-xl border-border hover:shadow-2xl transition-shadow duration-300 rounded-lg">
+              <CardHeader className="bg-gradient-to-r from-blue-500 p-4 to-cyan-500 text-white">
+                Booking Details
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-6">
@@ -476,17 +471,17 @@ export default function PaymentSuccessPage() {
 
                   {/* Rental Period Information */}
                   {booking.start_date && booking.end_date && (
-                    <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-6 rounded-xl border border-blue-200">
+                    <div className="bg-gradient-to-br from-accent-50 to-accent-90 p-6 rounded-xl border border-blue-200">
                       <h4 className="font-bold text-blue-900 mb-4 flex items-center">
                         <Calendar className="h-5 w-5 mr-2" />
                         Rental Period
                       </h4>
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-background text-foreground p-4 rounded-lg">
                         <div className="space-y-2">
                           <p className="text-sm text-blue-600 font-medium">
                             Start Date
                           </p>
-                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                          <p className="font-semibold p-3 rounded-lg border border-blue-200">
                             {formatDate(booking.start_date)}
                           </p>
                         </div>
@@ -494,7 +489,7 @@ export default function PaymentSuccessPage() {
                           <p className="text-sm text-blue-600 font-medium">
                             End Date
                           </p>
-                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                          <p className="font-semibold  p-3 rounded-lg border border-blue-200">
                             {formatDate(booking.end_date)}
                           </p>
                         </div>
@@ -502,7 +497,7 @@ export default function PaymentSuccessPage() {
                           <p className="text-sm text-blue-600 font-medium">
                             Duration
                           </p>
-                          <p className="font-semibold bg-white p-3 rounded-lg border border-blue-200">
+                          <p className="font-semibol p-3 rounded-lg border border-blue-200">
                             {calculateRentalDays(
                               booking.start_date,
                               booking.end_date
@@ -587,7 +582,7 @@ export default function PaymentSuccessPage() {
             transition={{ delay: 0.8 }}
           >
             <Card className="mb-6 border-green-200 shadow-xl bg-gradient-to-br from-green-50 to-emerald-50">
-              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white">
+              <CardHeader className="bg-gradient-to-r from-green-500 to-emerald-500 text-white p-4">
                 <CardTitle className="text-center flex items-center justify-center">
                   <Sparkles className="h-5 w-5 mr-2" />
                   Payment Summary
@@ -626,13 +621,8 @@ export default function PaymentSuccessPage() {
             transition={{ delay: 0.9 }}
           >
             <Card className="mb-6 border-blue-200 shadow-xl hover:shadow-2xl transition-shadow duration-300">
-              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-white">
-                <CardTitle className="flex items-center">
-                  <div className="p-2 bg-white/20 rounded-lg mr-3">
-                    <Clock className="h-5 w-5" />
-                  </div>
-                  Important Information
-                </CardTitle>
+              <CardHeader className="bg-gradient-to-r from-blue-500 to-cyan-500 text-foreground p-4">
+                <CardTitle>Important Information</CardTitle>
               </CardHeader>
               <CardContent className="pt-6">
                 <div className="space-y-4">
